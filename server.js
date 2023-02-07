@@ -20,10 +20,6 @@ app.use(
 );
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
-app.get("/", (req, res) => {
-  res.send("this is from backend");
-  console.log(__dirname);
-});
 
 //router
 app.use("/api/tour", tour);
