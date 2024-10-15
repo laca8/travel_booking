@@ -1,6 +1,6 @@
 const Report = require("../models/Report");
 const asyncHandler = require("express-async-handler");
-const ApiError = require("../utils/apiError");
+const ApiError = require("../server/utils/apiError");
 const addReport = asyncHandler(async (req, res) => {
   const reports = await Report.find();
   console.log(reports.length);

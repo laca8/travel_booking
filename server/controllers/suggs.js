@@ -1,6 +1,6 @@
 const Suggestion = require("../models/Suggestion");
 const asyncHandler = require("express-async-handler");
-const ApiError = require("../utils/apiError");
+const ApiError = require("../server/utils/apiError");
 const addSuggestion = asyncHandler(async (req, res) => {
   const suggs = await Suggestion.find();
   console.log(suggs.length);

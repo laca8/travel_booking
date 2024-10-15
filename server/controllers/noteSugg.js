@@ -1,18 +1,22 @@
-const NoteReport = require("../models/NoteReport");
+const NoteSugg = require("../models/NoteSugg");
 const asyncHandler = require("express-async-handler");
-const ApiError = require("../utils/apiError");
+const ApiError = require("../server/utils/apiError");
 const addNote = asyncHandler(async (req, res, next) => {
-  const { reportId, note } = req.body;
-  if (!reportId || !note) {
+  const { suggId, note } = req.body;
+  if (!suggId || !note) {
     return next(new ApiError("يجب ادخال البيانات", 500));
   }
-  const newNote = await NoteReport.create({ reportId, note });
-  res.status(200).json({ msg: "success", data: newNote });
+  const newNote = await NoteSugg.create({
+    note,
+    suggId,
+  });
+
+  res.status(201).json({ msg: "success", data: newNote });
 });
 
 const getNotes = asyncHandler(async (req, res, next) => {
-  const { reportId } = req.params;
-  const notes = await NoteReport.find({ reportId: reportId }); //.populate({path: "reportId", });
+  const { suggId } = req.params;
+  const notes = await NoteSugg.find({ suggId: suggId }); //.populate({path: "suggId", });
   if (!notes) {
     return next(new ApiError("لا يوجد بيانات", 500));
   }
