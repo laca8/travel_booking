@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body{
+  font-family:'Comic' 'Sans MS', 'Comic Sans', 'cursive';
+  background-color:white;
+  color: #333;
+  width: 100%;
+ 
+}
+.container{
+  width: 85%;
+  margin: auto;
+
+}
+
+.serv:hover .list-serv{
+    visibility: visible;
+   
+}
+.serv .li-serv:hover .list-serv{
+  visibility: visible;
+  display: block;
+}
