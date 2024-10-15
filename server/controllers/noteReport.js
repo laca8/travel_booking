@@ -1,6 +1,6 @@
 const NoteReport = require("../models/NoteReport");
 const asyncHandler = require("express-async-handler");
-const ApiError = require("../server/utils/apiError");
+const ApiError = require("../utils/apiError");
 const addNote = asyncHandler(async (req, res, next) => {
   const { reportId, note } = req.body;
   if (!reportId || !note) {
