@@ -1,6 +1,6 @@
 const NoteSugg = require("../models/NoteSugg");
 const asyncHandler = require("express-async-handler");
-const ApiError = require("../server/utils/apiError");
+const ApiError = require("../utils/apiError");
 const addNote = asyncHandler(async (req, res, next) => {
   const { suggId, note } = req.body;
   if (!suggId || !note) {
