@@ -2,7 +2,7 @@ const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const asyncHandler = require("express-async-handler");
-const ApiError = require("../server/utils/apiError");
+const ApiError = require("../utils/apiError");
 const register = asyncHandler(async (req, res, next) => {
   const { username, password } = req.body;
   if (!username || !password) {
