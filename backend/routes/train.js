@@ -1,0 +1,10 @@
+const express = require("express");
+const trainCntrl = require("../controller/train");
+const { protect, allowTo } = require("../middleware/auth");
+const router = express.Router();
+router.post("/", protect, allowTo, trainCntrl.addTrain);
+router.get("/:id", protect, trainCntrl.getTrain);
+router.get("/", protect, trainCntrl.getTrains);
+router.put("/:id", protect, allowTo, trainCntrl.editTrain);
+router.delete("/:id", protect, allowTo, trainCntrl.deleteTrain);
+module.exports = router;

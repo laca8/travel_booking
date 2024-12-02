@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary-color: #3e92cc;
+  --secondary-color: #96a4af;
+  --dark-color: #1e1b18;
+  --danger: #dc3545;
+  --white-color: whitesmoke;
+  --btn-primary: #3e92cc;
+  --btn-dark: #1e1b18;
+}
+* {
+  font-family: monospace;
+}
+body {
+  background-color: #333;
+  box-sizing: border-box;
+  font-family: monospace;
+}
+.container {
+  width: 80%;
+  margin: 30px auto 0 auto;
+}
+.trains {
+  width: 80%;
+  margin: 10px auto 0 auto;
+}
+.login {
+  width: 70%;
+  margin: 40px auto 0 auto;
+}
+.horse {
+  width: 70%;
+  margin: 10px auto 0 auto;
+}
+.active {
+  color: var(--primary-color);
+}
