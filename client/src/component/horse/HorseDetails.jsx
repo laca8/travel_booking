@@ -89,7 +89,7 @@ const HorseDetails = () => {
                   <div className="flex flex-col md:flex-row">
                     <div className=" space-y-4">
                       <img
-                        src={`http://localhost:5000/uploads/${x?.image}`}
+                        src={`/uploads/${x?.image}`}
                         alt="صورة الحصان"
                         className="rounded-md w-40 h-36 object-cover shadow-md mx-auto ml-2"
                       />

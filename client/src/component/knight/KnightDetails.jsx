@@ -66,7 +66,7 @@ const KnightDetails = () => {
           <div className="relative h-28 bg-[var(--primary-color)]">
             <div className="absolute -bottom-16 left-8">
               <img
-                src={`http://localhost:5000/uploads/${knight?.data?.image}`}
+                src={`/uploads/${knight?.data?.image}`}
                 alt="صورة الفارس"
                 className="w-32 h-32 rounded-full border-4 border-var[--primary-color]"
               />
