@@ -72,6 +72,16 @@ const getKnight = async (req, res) => {
     return res.status(500).json({ message: err.message });
   }
 };
+const getKnights = async (req, res) => {
+  try {
+    const knights = await Knight.find({});
+
+    return res.status(201).json({ data: knights });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: err.message });
+  }
+};
 const editKnight = async (req, res) => {
   try {
     //console.log(req?.file);
@@ -117,4 +127,11 @@ const deleteKnight = async (req, res) => {
     return res.status(500).json({ message: err.message });
   }
 };
-module.exports = { upload, addKnight, getKnight, editKnight, deleteKnight };
+module.exports = {
+  upload,
+  addKnight,
+  getKnight,
+  editKnight,
+  deleteKnight,
+  getKnights,
+};

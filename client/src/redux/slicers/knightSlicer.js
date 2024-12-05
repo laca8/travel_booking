@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import knightService from "../services/knightService";
 const initialState = {
   knight: null,
+  knights: [],
   loading: false,
   error: null,
   success: false,
@@ -44,6 +45,28 @@ export const fetchKnight = createAsyncThunk("fetchKnight", async (_, api) => {
     };
 
     return await knightService.getKnight(config);
+  } catch (error) {
+    // console.log(error);
+    return api.rejectWithValue(error?.response?.data?.message);
+  }
+});
+
+export const fetchKnights = createAsyncThunk("fetchKnights", async (_, api) => {
+  try {
+    // console.log(api);
+
+    const appData = api.getState();
+    const { user } = appData.userSlice;
+    // console.log(user);
+
+    const config = {
+      headers: {
+        // "Content-Type": "application/json",
+        authorization: user.token,
+      },
+    };
+
+    return await knightService.getKnights(config);
   } catch (error) {
     // console.log(error);
     return api.rejectWithValue(error?.response?.data?.message);
@@ -123,6 +146,20 @@ export const knightSlice = createSlice({
       .addCase(fetchKnight.fulfilled, (state, action) => {
         (state.loading = false),
           (state.knight = action.payload),
+          (state.success = true),
+          (state.error = null);
+      })
+      .addCase(fetchKnights.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchKnights.rejected, (state, action) => {
+        (state.success = false),
+          (state.loading = false),
+          (state.error = action.payload);
+      })
+      .addCase(fetchKnights.fulfilled, (state, action) => {
+        (state.loading = false),
+          (state.knights = action.payload),
           (state.success = true),
           (state.error = null);
       })

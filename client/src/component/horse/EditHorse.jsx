@@ -1,7 +1,7 @@
 import { X } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import Header from "../Header";
+import Header from "../features/Header";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
   fetchKnight,

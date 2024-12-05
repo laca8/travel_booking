@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import Header from "./Header";
+import Header from "../features/Header";
 import { NavLink, useNavigate } from "react-router-dom";
-import { addKnight, fetchKnight } from "../redux/slicers/knightSlicer";
+import { addKnight, fetchKnight } from "../../redux/slicers/knightSlicer";
 import { toast } from "react-toastify";
-import Loader from "./features/Loader";
+import Loader from "../features/Loader";
 import KnightDetails from "./KnightDetails";
 const AddMan = () => {
   const navigator = useNavigate();

@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
-import Header from "./Header";
-import { addHorse, fetchHorse } from "../redux/slicers/horseSlicer";
+import Header from "../features/Header";
+import { addHorse, fetchHorse } from "../../redux/slicers/horseSlicer";
 import { NavLink, useNavigate } from "react-router-dom";
 import { X } from "lucide-react";
 
 import { toast } from "react-toastify";
-import Loader from "./features/Loader";
+import Loader from "../features/Loader";
 import { useDispatch, useSelector } from "react-redux";
+import { fetchKnight } from "../../redux/slicers/knightSlicer";
 const Modal = ({ isOpen, onClose, title, children }) => {
   if (!isOpen) return null;
 
@@ -37,6 +38,11 @@ const Modal = ({ isOpen, onClose, title, children }) => {
   );
 };
 const AddHorse = ({ isOpen, setIsOpen }) => {
+  const knightSlice = useSelector((state) => state.knightSlice);
+  const { knight } = knightSlice;
+  useEffect(() => {
+    dispatch(fetchKnight());
+  }, []);
   const navigator = useNavigate();
 
   const [notify, setNotify] = useState("");

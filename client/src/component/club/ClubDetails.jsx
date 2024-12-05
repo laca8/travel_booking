@@ -7,9 +7,9 @@ import {
   UserIcon,
 } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
-import { removeClub } from "../redux/slicers/clubSlicer";
+import { removeClub } from "../../redux/slicers/clubSlicer";
 import { toast } from "react-toastify";
-import Loader from "./features/Loader";
+import Loader from "../features/Loader";
 import EditClub from "./EditClub";
 const ClubDetails = () => {
   const dispatch = useDispatch();
@@ -23,7 +23,7 @@ const ClubDetails = () => {
   };
   return (
     <div className="min-h-screen  p-8 font-sans" dir="rtl">
-      <div className="mx-auto max-w-4xl rounded-lg shadow-lg">
+      <div className="mx-auto max-w-4xl rounded-lg shadow-lg text-lg">
         <div className=" flex flex-row items-start justify-start w-72  mr-2">
           <button
             type="button"

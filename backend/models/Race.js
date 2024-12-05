@@ -6,7 +6,7 @@ const raceSchema = new mongoose.Schema(
       required: [true, "من فضلك ادخل تاريخ المسابقة"],
     },
     distance: {
-      type: String,
+      type: Number,
       required: [true, "من فضلك ادخل المسافة"],
     },
     address: {
@@ -14,11 +14,11 @@ const raceSchema = new mongoose.Schema(
       required: [true, "من فضلك ادخل مكان المسابقة"],
     },
     min_speed: {
-      type: String,
+      type: Number,
       required: [true, "من فضلك ادخل الحد الأدنى للسرعة"],
     },
     max_speed: {
-      type: String,
+      type: Number,
       required: [true, "من فضلك ادخل الحد الأقصى للسرعة"],
     },
     vite_time: {
@@ -31,7 +31,7 @@ const raceSchema = new mongoose.Schema(
     },
 
     num_rounds: {
-      type: String,
+      type: Number,
       required: [true, "من فضلك ادخل عدد المراحل"],
     },
     rounds: [{}],

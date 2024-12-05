@@ -1,15 +1,15 @@
 import { useState } from "react";
-import Header from "./component/Header";
+import Header from "./component/features/Header";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import AddHorse from "./component/AddHorse";
-import AddMan from "./component/AddMan";
-import AddClub from "./component/AddClub";
+import AddHorse from "./component/horse/AddHorse";
+import AddMan from "./component/knight/AddMan";
+import AddClub from "./component/club/AddClub";
 import Home from "./pages/Home";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import Training from "./component/train/Training";
 import Notes from "./component/Notes";
-import Champion from "./pages/Champion";
+import Champion from "./pages/races/Champion";
 import Races from "./pages/races/Races";
 import RaceDetails from "./pages/races/RaceDetails";
 import Contact from "./component/Contact";
@@ -17,6 +17,8 @@ import { ToastContainer } from "react-toastify";
 import HorseDetails from "./component/horse/HorseDetails";
 import Trains from "./component/train/Trains";
 import Form from "./component/simile_form/Form";
+import RaceStart from "./component/simile_form/RaceStart";
+import Test from "./component/simile_form/Test";
 function App() {
   return (
     <div>
@@ -39,6 +41,7 @@ function App() {
           <Route path="/race-details/:id" element={<RaceDetails />}></Route>
           <Route path="/contact" element={<Contact />}></Route>
           <Route path="/form" element={<Form />}></Route>
+          <Route path="/race/start/:id" element={<Test />}></Route>
         </Routes>
       </BrowserRouter>
     </div>

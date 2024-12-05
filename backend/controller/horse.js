@@ -80,6 +80,7 @@ const addHorse = async (req, res) => {
       eye,
       blood,
       heat,
+
       userId: req.user._id,
     });
     return res.status(201).json({ data: newHorse });
@@ -95,6 +96,18 @@ const getHorse = async (req, res) => {
     //   return res.status(400).json({ message: "لم تقم باضافة اي خيل من قبل " });
     // }
     return res.status(201).json({ data: horse });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: err.message });
+  }
+};
+const getHorses = async (req, res) => {
+  try {
+    const horses = await Horse.find({});
+    // if (!horse) {
+    //   return res.status(400).json({ message: "لم تقم باضافة اي خيل من قبل " });
+    // }
+    return res.status(201).json({ data: horses });
   } catch (err) {
     console.log(err);
     return res.status(500).json({ message: err.message });
@@ -134,4 +147,11 @@ const deleteHorse = async (req, res) => {
     return res.status(500).json({ message: err.message });
   }
 };
-module.exports = { addHorse, getHorse, editHorse, deleteHorse, upload };
+module.exports = {
+  addHorse,
+  getHorse,
+  editHorse,
+  deleteHorse,
+  upload,
+  getHorses,
+};

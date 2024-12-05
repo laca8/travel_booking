@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import Header from "../../component/Header";
+import Header from "../../component/features/Header";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { registerUser } from "../../redux/slicers/authSlicer";
@@ -75,7 +75,7 @@ const Register = () => {
               alt=""
             />
           </div>
-          <div className=" bg-white p-10 shadow-lg">
+          <div className=" bg-white p-10 shadow-lg h-full">
             <div className="flex items-center justify-center mb-2">
               <h3 className="text-[var(--primary-color)] text-xl font-bold border-2 border-[var(--primary-color)] p-2 rounded-lg mt-10">
                 اضافة مستخدم جديد

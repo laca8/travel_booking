@@ -1,5 +1,5 @@
 import React from "react";
-import Header from "./Header";
+import Header from "./features/Header";
 import conImg from "../assets/img/contact.jpg";
 const Contact = () => {
   return (

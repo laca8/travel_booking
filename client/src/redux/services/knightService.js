@@ -1,7 +1,7 @@
 import axios from "axios";
 const API_URL = "/api/knight";
-const getKnights = async () => {
-  const response = await axios.get(API_URL);
+const getKnights = async (config) => {
+  const response = await axios.get(`${API_URL}/all`, config);
   return response.data;
 };
 const getKnight = async (config) => {
@@ -26,5 +26,6 @@ const reportService = {
   getKnight,
   deleteKnight,
   updateKnight,
+  getKnights,
 };
 export default reportService;

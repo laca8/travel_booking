@@ -42,20 +42,20 @@ const Header = () => {
                       label="اضافة"
                       dismissOnClick={false}
                       inline
-                      className="bg-[var(--dark-color)]">
+                      className="bg-[var(--secondary-color)]">
                       <Dropdown.Item
                         onClick={() => navigator("/add-man")}
-                        className="text-white hover:text-[--primary-color]">
+                        className="text-[var(--dark-color)] hover:text-[--primary-color]">
                         فارس
                       </Dropdown.Item>
                       <Dropdown.Item
                         onClick={() => navigator("/add-club")}
-                        className="text-white hover:text-[--primary-color]">
+                        className="text-[var(--dark-color)] hover:text-[--primary-color]">
                         نادي
                       </Dropdown.Item>
                       <Dropdown.Item
                         onClick={() => navigator("/add-horse")}
-                        className="text-white hover:text-[--primary-color]">
+                        className="text-[var(--dark-color)] hover:text-[--primary-color]">
                         خيل
                       </Dropdown.Item>
                     </Dropdown>
@@ -63,46 +63,44 @@ const Header = () => {
                   {JSON.parse(user)?.data?.isAdmin ? (
                     <li className=" border-[var(--dark-color)]  px-3 text-white block font-semibold text-[15px]">
                       <Dropdown
-                        label="اضافة"
+                        label="التدريب"
                         dismissOnClick={false}
                         inline
-                        className="bg-[var(--dark-color)]">
-                        <Dropdown.Item>
-                          <NavLink
-                            to="/add-train"
-                            activeClassName="active"
-                            className="text-white block font-semibold text-[15px] hover:text-[--primary-color]">
-                            التدريب
-                          </NavLink>
+                        className="bg-[var(--secondary-color)]">
+                        <Dropdown.Item
+                          onClick={() => navigator("/add-train")}
+                          className="text-[var(--dark-color)]">
+                          اضافة تدريب
                         </Dropdown.Item>
-                        <Dropdown.Item>
-                          <NavLink
-                            to="/champ"
-                            activeClassName="active"
-                            className="text-white block font-semibold text-[15px] hover:text-[--primary-color]">
-                            المسابقة
-                          </NavLink>
+                        <Dropdown.Item
+                          onClick={() => navigator("/trains")}
+                          className="text-[var(--dark-color)]">
+                          التدريبات
+                        </Dropdown.Item>
+                      </Dropdown>
+                    </li>
+                  ) : null}
+                  {JSON.parse(user)?.data?.isAdmin ? (
+                    <li className=" border-[var(--primary-color)]  px-3 text-white block font-semibold text-[15px]">
+                      <Dropdown
+                        label="المسابقة"
+                        dismissOnClick={false}
+                        inline
+                        className="bg-[var(--secondary-color)]">
+                        <Dropdown.Item
+                          onClick={() => navigator("/champ")}
+                          className="text-[var(--dark-color)]">
+                          اضافة مسابقة
+                        </Dropdown.Item>
+                        <Dropdown.Item
+                          onClick={() => navigator("/races-details")}
+                          className="text-[var(--dark-color)]">
+                          المسابقات
                         </Dropdown.Item>
                       </Dropdown>
                     </li>
                   ) : null}
 
-                  <li className=" border-gray-300  px-3">
-                    <NavLink
-                      to="/trains"
-                      activeClassName="active"
-                      className="text-white block font-semibold text-[15px]">
-                      التدريبات
-                    </NavLink>
-                  </li>
-                  <li className=" border-gray-300  px-3">
-                    <NavLink
-                      to="/races-details"
-                      activeClassName="active"
-                      className="text-white block font-semibold text-[15px]">
-                      المسابقات
-                    </NavLink>
-                  </li>
                   <li className=" border-gray-300  px-3">
                     <NavLink
                       to="/notes"

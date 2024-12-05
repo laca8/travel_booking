@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import Header from "./Header";
+import Header from "../features/Header";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
   fetchKnight,
   removeKnight,
   editKnight,
-} from "../redux/slicers/knightSlicer";
+} from "../../redux/slicers/knightSlicer";
 import { toast } from "react-toastify";
-import Loader from "./features/Loader";
+import Loader from "../features/Loader";
 import {
   Trophy,
   Calendar,
@@ -51,7 +51,7 @@ const KnightDetails = () => {
         </div>
       )}
       {loading && <Loader />}
-      <div className="min-h-screen  py-8 ">
+      <div className="min-h-screen  py-8 text-lg">
         <div className="max-w-4xl  mx-auto rounded-lg shadow-lg overflow-hidden">
           <div className=" flex flex-row items-start justify-start w-72  mr-2">
             <button
@@ -96,15 +96,16 @@ const KnightDetails = () => {
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-              <div className="bg-gray-50 p-4 rounded-lg">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8 ">
+              <div className="bg-yellow-700 text-white p-4 rounded-lg mb-2">
                 <div className="flex items-center mb-2">
                   <UsersRound className="w-5 h-5 text-yellow-500 ml-2" />
                   <h3 className="font-semibold">النوع</h3>
                 </div>
                 <p className="text-2xl font-bold">{knight?.data?.sex}</p>
               </div>
-              <div className="bg-gray-50 p-4 rounded-lg">
+
+              <div className="bg-yellow-700 text-white mb-2 p-4 rounded-lg">
                 <div className="flex items-center mb-2">
                   <Star className="w-5 h-5 text-blue-500 ml-2" />
                   <h3 className="font-semibold">الاسطبل</h3>

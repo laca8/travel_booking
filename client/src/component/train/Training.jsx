@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import Header from "../Header";
+import Header from "../features/Header";
 import { useDispatch, useSelector } from "react-redux";
 import { addTrain } from "../../redux/slicers/trainSlicer";
 import { Loader } from "lucide-react";

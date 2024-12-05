@@ -1,9 +1,10 @@
 const express = require("express");
 const horseCtrl = require("../controller/horse");
-const { protect } = require("../middleware/auth");
+const { protect, allowTo } = require("../middleware/auth");
 const router = express.Router();
 router.post("/", protect, horseCtrl.upload.single("image"), horseCtrl.addHorse);
 router.get("/", protect, horseCtrl.getHorse);
+router.get("/all", protect, allowTo, horseCtrl.getHorses);
 router.put(
   "/:id",
   protect,

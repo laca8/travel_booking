@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import Header from "../Header";
+import Header from "../features/Header";
 import { NavLink, useNavigate } from "react-router-dom";
 import { removeHorse } from "../../redux/slicers/horseSlicer";
 import { toast } from "react-toastify";
@@ -16,14 +16,15 @@ import {
   UsersRound,
 } from "lucide-react";
 import EditHorse from "./EditHorse";
-import AddHorse from "../AddHorse";
+import AddHorse from "./AddHorse";
+import { fetchKnight } from "../../redux/slicers/knightSlicer";
 function InfoItem({ label, value }) {
   return (
     <div className="bg-gray-50 p-2 rounded">
-      <span className="text-xs  text-[var(--primary-color)] block font-bold">
+      <span className="  text-[var(--primary-color)] block font-bold">
         {label}
       </span>
-      <span className="text-sm font-semibold text-gray-800">{value}</span>
+      <span className=" font-semibold text-gray-800">{value}</span>
     </div>
   );
 }
@@ -36,6 +37,7 @@ const HorseDetails = () => {
   const dispatch = useDispatch();
   const horseSlice = useSelector((state) => state.horseSlice);
   const { horses, loading, error, success } = horseSlice;
+
   toast.options = {
     preventDuplicates: true,
     preventOpenDuplicates: true,
@@ -67,17 +69,19 @@ const HorseDetails = () => {
       <AddHorse isOpen={isOpen} setIsOpen={setIsOpen} />
       {horses?.data?.length != 0 &&
         horses?.data?.map((x, i) => (
-          <div className="horse rounded-lg shadow-lg overflow-hidden" key={i}>
+          <div
+            className="horse rounded-lg shadow-lg overflow-hidden text-lg"
+            key={i}>
             <div className="p-4 bg-gray-50 ">
               <div className="bg-white shadow-lg rounded-lg overflow-hidden">
                 <button
                   type="button"
                   onClick={() => handleDelete(x._id)}
-                  className=" px-6 py-2.5  text-sm bg-[var(--danger)] text-white rounded hover:bg-red-600 transition-all ">
+                  className=" px-6 py-2.5   bg-[var(--danger)] text-white rounded hover:bg-red-600 transition-all ">
                   {loading ? <Loader /> : "حذف"}
                 </button>
 
-                <div className="p-6 ">
+                <div className="p-6 text-lg ">
                   <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">
                     بروفايل الخيل
                   </h2>
@@ -90,11 +94,11 @@ const HorseDetails = () => {
                         className="rounded-md w-40 h-36 object-cover shadow-md mx-auto ml-2"
                       />
                       <div className="bg-blue-50 rounded-lg p-3 shadow-sm ml-2">
-                        <h3 className="font-semibold text-sm mb-2 text-blue-800">
+                        <h3 className="font-semibold  mb-2 text-blue-800">
                           البطولات:
                         </h3>
                         <div className="flex flex-wrap gap-1">
-                          <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                          <span className="bg-blue-100 text-blue-800  px-2 py-1 rounded-full">
                             {x.champions}
                           </span>
                         </div>

@@ -1,4 +1,4 @@
-import Header from "./Header";
+import Header from "./features/Header";
 
 import React, { useState, useRef, useEffect } from "react";
 import { Send, User, Shield } from "lucide-react";

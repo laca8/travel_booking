@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import Header from "../Header";
+import Header from "../features/Header";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchTrains } from "../../redux/slicers/trainSlicer";
 import { Loader } from "lucide-react";
@@ -37,14 +37,14 @@ const Trains = () => {
         </div>
       )}
       {loading && <Loader />}
-      <div className="trains font-[sans-serif]   p-10 shadow-lg rounded-md">
+      <div className="trains font-[sans-serif]   p-10 shadow-lg rounded-md text-xl">
         <div className="flex items-center justify-center mb-2">
           <h3 className="text-[var(--white-color)] text-xl font-bold border-2 border-[var(--primary-color)] p-2 rounded-lg">
             التدريبات
           </h3>
         </div>
         <div className="items-center">
-          <label className="text-[18px] text-[var(--white-color)] font-bold">
+          <label className=" text-[var(--white-color)] font-bold">
             نوع الخطوة
           </label>
           <select
@@ -61,9 +61,9 @@ const Trains = () => {
               ))}
           </select>
         </div>
-        <div className="w-full  bg-gradient-to-b from-white to-gray-50 rounded-xl shadow-xl p-8">
+        <div className=" w-full bg-gradient-to-b from-white to-gray-50 rounded-xl shadow-xl p-8">
           <div className="overflow-x-auto rounded-lg shadow-sm">
-            <table className="w-full border-collapse bg-white">
+            <table className="w-full border-collapse bg-white text-xl">
               <thead>
                 <tr className="bg-gradient-to-r from-[var(--primary-color)] to-blue-700">
                   <th className="px-6 py-4 text-right text-white font-semibold">
@@ -102,14 +102,10 @@ const Trains = () => {
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <span className=" text-gray-800  text-sm">
-                          {comp?.time}
-                        </span>
+                        <span className=" text-gray-800  ">{comp?.time}</span>
                       </td>
                       <td className="px-6 py-4 text-right text-gray-700">
-                        <span className=" text-gray-800  text-sm">
-                          {comp?.type}
-                        </span>
+                        <span className=" text-gray-800  ">{comp?.type}</span>
                       </td>
                     </tr>
                   ))}

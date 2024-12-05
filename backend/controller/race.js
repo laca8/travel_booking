@@ -49,7 +49,6 @@ const addRace = async (req, res) => {
 const getRace = async (req, res) => {
   try {
     const race = await Race.findById({ _id: req.params.id });
-
     return res.status(201).json({ data: race });
   } catch (err) {
     console.log(err);
@@ -67,17 +66,19 @@ const getRaces = async (req, res) => {
   }
 };
 const editRace = async (req, res) => {
-  const { knight, horse } = req.body;
+  const { knight, horse, num } = req.body;
   try {
     const raceExist = await Race.findById({ _id: req.params.id });
-
     const exist = raceExist.players.find(
       (x) => x.knight == knight && x.horse == horse
     );
-
+    const exitNum = raceExist.players.find((x) => x.num == num);
+    if (exitNum) {
+      //console.log("تم التسجيل مسبقا ");
+      return res.status(400).json({ message: "رقم المتسابق موجود بالفعل" });
+    }
     if (exist) {
       //console.log("تم التسجيل مسبقا ");
-
       return res.status(400).json({ message: "تم التسجيل في المسابقة من قبل" });
     }
 
@@ -86,10 +87,7 @@ const editRace = async (req, res) => {
       {
         $push: {
           players: {
-            id: Math.random()
-              .toString(36)
-              .replace(/[^a-z]+/g, "")
-              .substr(2, 10),
+            num: req.body.num,
             knight: req.body.knight,
             horse: req.body.horse,
           },
@@ -111,7 +109,6 @@ const deleteRace = async (req, res) => {
   try {
     const raceExist = await Race.findById({ _id: req.params.id });
     const race = await Race.findByIdAndDelete({ _id: req.params.id });
-
     return res.status(201).json("تم حذف المسابقة");
   } catch (err) {
     console.log(err);

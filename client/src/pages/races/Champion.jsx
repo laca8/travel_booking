@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from "react";
-import Header from "../component/Header";
+import Header from "../../component/features/Header";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { addRace } from "../redux/slicers/raceSlicer";
-import Loader from "../component/features/Loader";
+import { addRace } from "../../redux/slicers/raceSlicer";
+import Loader from "../../component/features/Loader";
 import { toast } from "react-toastify";
 const Champion = () => {
   const dispatch = useDispatch();
-  const [levels, setLevels] = useState("");
+  const [levels, setLevels] = useState(0);
   const [date, setDate] = useState("");
-  const [distance, setDistance] = useState("");
-  const [min_speed, setMin] = useState("");
-  const [max_speed, setMax] = useState("");
-  const [vite_time, setVite] = useState("");
-  const [rest, setRest] = useState("");
+  const [distance, setDistance] = useState(0);
+  const [min_speed, setMin] = useState(0);
+  const [max_speed, setMax] = useState(0);
+  const [vite_time, setVite] = useState(0);
+  const [rest, setRest] = useState(0);
   const [address, setAddress] = useState("");
   const [arrLevels, setArrLevels] = useState(null);
   const [notify, setNotify] = useState("");
@@ -22,12 +22,7 @@ const Champion = () => {
     if (levels) {
       setArrLevels(
         new Array(Number(levels)).fill({
-          start: "",
-          end: "",
-          time: "",
-          state_time: "",
-          last_state: "",
-          speed: "",
+          distance: 0,
         })
       );
     }
@@ -61,8 +56,8 @@ const Champion = () => {
     console.log(arrLevels);
     const row = {
       date,
-      vite_time,
-      rest_time: rest,
+      vite_time: `00:${vite_time.toString().padStart(2, "0")}`,
+      rest_time: `00:${rest.toString().padStart(2, "0")}`,
       distance,
       min_speed,
       max_speed,
@@ -70,6 +65,8 @@ const Champion = () => {
       rounds: arrLevels,
       address: address,
     };
+    console.log(row);
+
     dispatch(addRace(row));
     if (success) {
       setNotify(toast.success("تم اضافة بيانات المسابقة"));
@@ -108,7 +105,7 @@ const Champion = () => {
               value={date}
               onChange={(e) => setDate(e.target.value)}
               type="date"
-              placeholder="رقم التدريب"
+              placeholder="التاريخ"
               className="p-2 bg-[var(--white-color)] text-black w-full text-sm border-2 border-[var(--dark-color)]  focus:border-[var(--dark-color)] rounded  "
             />
           </div>
@@ -130,9 +127,10 @@ const Champion = () => {
               المسافة/ كم
             </label>
             <input
+              min={0}
               value={distance}
               onChange={(e) => setDistance(e.target.value)}
-              type="text"
+              type="number"
               placeholder="المسافة"
               className="p-2 bg-[var(--white-color)] text-black w-full text-sm border-2 border-[var(--dark-color)] focus:border-[var(--dark-color)] rounded "
             />
@@ -143,9 +141,10 @@ const Champion = () => {
               حد أدنى للسرعة/ كم
             </label>
             <input
+              min={0}
               value={min_speed}
               onChange={(e) => setMin(e.target.value)}
-              type="text"
+              type="number"
               placeholder="حد أدنى للسرعة"
               className="p-2 bg-[var(--white-color)] text-black w-full text-sm border-2 border-[var(--dark-color)] focus:border-[var(--dark-color)] rounded "
             />
@@ -155,9 +154,10 @@ const Champion = () => {
               حد أقصى للسرعة/ كم
             </label>
             <input
+              min={0}
               value={max_speed}
               onChange={(e) => setMax(e.target.value)}
-              type="text"
+              type="number"
               placeholder="حد أقصى للسرعة"
               className="p-2 bg-[var(--white-color)] text-black w-full text-sm border-2 border-[var(--dark-color)] focus:border-[var(--dark-color)] rounded "
             />
@@ -165,23 +165,14 @@ const Champion = () => {
 
           <div className="items-center">
             <label className="text-[18px] text-[var(--dark-color)] font-bold">
-              عدد المراحل
+              vet time
             </label>
             <input
-              type="text"
-              placeholder="المراحل"
-              value={levels}
-              onChange={(e) => setLevels(e.target.value)}
-              className="p-2 bg-[var(--white-color)] text-black w-full text-sm border-2 border-[var(--dark-color)] focus:border-[var(--dark-color)] rounded "
-            />
-          </div>
-          <div className="items-center">
-            <label className="text-[18px] text-[var(--dark-color)] font-bold">
-              vite time
-            </label>
-            <input
-              type="text"
-              placeholder="vite time"
+              // type="time"
+              min={0}
+              max={59}
+              placeholder="vet time"
+              type="number"
               value={vite_time}
               onChange={(e) => setVite(e.target.value)}
               className="p-2 bg-[var(--white-color)] text-black w-full text-sm border-2 border-[var(--dark-color)] focus:border-[var(--dark-color)] rounded "
@@ -192,10 +183,26 @@ const Champion = () => {
               rest time
             </label>
             <input
-              type="text"
+              min={0}
+              max={59}
+              type="number"
               placeholder="rest time"
               value={rest}
               onChange={(e) => setRest(e.target.value)}
+              className="p-2 bg-[var(--white-color)] text-black w-full text-sm border-2 border-[var(--dark-color)] focus:border-[var(--dark-color)] rounded "
+            />
+          </div>
+          <div className="items-center">
+            <label className="text-[18px] text-[var(--dark-color)] font-bold">
+              عدد المراحل
+            </label>
+            <input
+              min={0}
+              type="number"
+              max={3}
+              placeholder="المراحل"
+              value={levels}
+              onChange={(e) => setLevels(e.target.value)}
               className="p-2 bg-[var(--white-color)] text-black w-full text-sm border-2 border-[var(--dark-color)] focus:border-[var(--dark-color)] rounded "
             />
           </div>
@@ -205,76 +212,13 @@ const Champion = () => {
             <div key={i} className="bg-blue-100 p-2 flex flex-col">
               <div className="items-center">
                 <label className="text-[18px] text-[var(--dark-color)] font-bold">
-                  زمن بداية المرحلة {i + 1}
+                  مسافة المرحلة {i + 1}
                 </label>
                 <input
-                  value={x.start}
-                  onChange={(e) => handleChange(i, "start", e.target.value)}
-                  type="text"
-                  placeholder=""
-                  className="p-2 bg-[var(--white-color)] text-black w-full text-sm border-2 border-[var(--dark-color)] focus:border-[var(--dark-color)] rounded "
-                />
-              </div>
-              <div className="items-center">
-                <label className="text-[18px] text-[var(--dark-color)] font-bold">
-                  زمن نهاية المرحلة {i + 1}
-                </label>
-                <input
-                  value={x.end}
-                  onChange={(e) => handleChange(i, "end", e.target.value)}
-                  type="text"
-                  placeholder=""
-                  className="p-2 bg-[var(--white-color)] text-black w-full text-sm border-2 border-[var(--dark-color)] focus:border-[var(--dark-color)] rounded "
-                />
-              </div>
-              <div className="items-center">
-                <label className="text-[18px] text-[var(--dark-color)] font-bold">
-                  زمن المرحلة {i + 1}
-                </label>
-                <input
-                  value={x.time}
-                  onChange={(e) => handleChange(i, "time", e.target.value)}
-                  type="text"
-                  placeholder=""
-                  className="p-2 bg-[var(--white-color)] text-black w-full text-sm border-2 border-[var(--dark-color)] focus:border-[var(--dark-color)] rounded "
-                />
-              </div>
-              <div className="items-center">
-                <label className="text-[18px] text-[var(--dark-color)] font-bold">
-                  ميعاد الكشف {i + 1}
-                </label>
-                <input
-                  value={x.state_time}
-                  onChange={(e) =>
-                    handleChange(i, "state_time", e.target.value)
-                  }
-                  type="text"
-                  placeholder=""
-                  className="p-2 bg-[var(--white-color)] text-black w-full text-sm border-2 border-[var(--dark-color)] focus:border-[var(--dark-color)] rounded "
-                />
-              </div>
-              <div className="items-center">
-                <label className="text-[18px] text-[var(--dark-color)] font-bold">
-                  اخر ميعاد الكشف {i + 1}
-                </label>
-                <input
-                  value={x.last_state}
-                  onChange={(e) =>
-                    handleChange(i, "last_state", e.target.value)
-                  }
-                  type="text"
-                  placeholder=""
-                  className="p-2 bg-[var(--white-color)] text-black w-full text-sm border-2 border-[var(--dark-color)] focus:border-[var(--dark-color)] rounded "
-                />
-              </div>
-              <div className="items-center">
-                <label className="text-[18px] text-[var(--dark-color)] font-bold">
-                  سرعة المرحلة {i + 1}
-                </label>
-                <input
-                  value={x.speed}
-                  onChange={(e) => handleChange(i, "speed", e.target.value)}
-                  type="text"
+                  min={0}
+                  value={x.distance}
+                  onChange={(e) => handleChange(i, "distance", e.target.value)}
+                  type="number"
                   placeholder=""
                   className="p-2 bg-[var(--white-color)] text-black w-full text-sm border-2 border-[var(--dark-color)] focus:border-[var(--dark-color)] rounded "
                 />

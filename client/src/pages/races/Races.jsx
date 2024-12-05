@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Header from "../../component/Header";
+import Header from "../../component/features/Header";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { addRace, fetchRaces } from "../../redux/slicers/raceSlicer";
@@ -34,7 +34,7 @@ const Races = () => {
         </div>
       )}
       {loading && <Loader />}
-      <div className="container font-[sans-serif]   p-10 shadow-lg rounded-md">
+      <div className="container font-[sans-serif]   p-10 shadow-lg rounded-md text-lg">
         <div className="flex items-center justify-center mb-2">
           <h3 className="text-[var(--white-color)] text-xl font-bold border-2 border-[var(--primary-color)] p-2 rounded-lg">
             المسابقات

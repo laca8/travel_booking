@@ -1,11 +1,10 @@
 const mongoose = require("mongoose");
 const path = require("path");
-
+const dotenv = require("dotenv");
+dotenv.config("../.env");
 const db = async () => {
   try {
-    await mongoose.connect(
-      "mongodb+srv://ahmed:VernA2525@cluster0.2qrrr0b.mongodb.net/فروسية?retryWrites=true&w=majority"
-    );
+    await mongoose.connect(process.env.DBURL);
     console.log("db connected");
   } catch (err) {
     console.log(err);

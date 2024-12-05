@@ -1,15 +1,15 @@
 import { X } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import Header from "./Header";
+import Header from "../features/Header";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
   fetchKnight,
   removeKnight,
   editKnight,
-} from "../redux/slicers/knightSlicer";
+} from "../../redux/slicers/knightSlicer";
 import { toast } from "react-toastify";
-import Loader from "./features/Loader";
+import Loader from "../features/Loader";
 import {
   Trophy,
   Calendar,
@@ -80,7 +80,7 @@ const EditKnight = ({ isOpen, setIsOpen }) => {
 
     // Validate file size
     if (x.size > maxSize) {
-      alert("File is too large. Maximum size is 200KB.");
+      alert("File is too large. Maximum size is 1MB.");
       return;
     }
     setFile(e.target.files[0]);

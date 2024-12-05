@@ -51,6 +51,28 @@ export const fetchHorse = createAsyncThunk("fetchHorse", async (_, api) => {
   }
 });
 
+export const fetchHorses = createAsyncThunk("fetchHorses", async (_, api) => {
+  try {
+    // console.log(api);
+
+    const appData = api.getState();
+    const { user } = appData.userSlice;
+    // console.log(user);
+
+    const config = {
+      headers: {
+        // "Content-Type": "application/json",
+        authorization: user.token,
+      },
+    };
+
+    return await horseService.getHorses(config);
+  } catch (error) {
+    // console.log(error);
+    return api.rejectWithValue(error?.response?.data?.message);
+  }
+});
+
 export const removeHorse = createAsyncThunk("removeHorse", async (id, api) => {
   try {
     // console.log(api);
@@ -122,6 +144,20 @@ export const horseSlice = createSlice({
           (state.error = action.payload);
       })
       .addCase(fetchHorse.fulfilled, (state, action) => {
+        (state.loading = false),
+          (state.horses = action.payload),
+          (state.success = true),
+          (state.error = null);
+      })
+      .addCase(fetchHorses.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchHorses.rejected, (state, action) => {
+        (state.success = false),
+          (state.loading = false),
+          (state.error = action.payload);
+      })
+      .addCase(fetchHorses.fulfilled, (state, action) => {
         (state.loading = false),
           (state.horses = action.payload),
           (state.success = true),

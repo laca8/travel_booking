@@ -1,5 +1,5 @@
 import React from "react";
-import Header from "../component/Header";
+import Header from "../component/features/Header";
 import img1 from "../assets/img/course114360x340.jpg";
 import img2 from "../assets/img/course614360x340.jpg";
 import img3 from "../assets/img/courses1.jpg";
