@@ -115,6 +115,31 @@ export const editRace = createAsyncThunk("editRace", async (row, api) => {
     return api.rejectWithValue(error?.response?.data?.message);
   }
 });
+export const editStageRace = createAsyncThunk(
+  "editStageRace",
+  async (row, api) => {
+    try {
+      // console.log(api);
+
+      const appData = api.getState();
+      const { user } = appData.userSlice;
+      // console.log(user);
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+
+          authorization: user.token,
+        },
+      };
+
+      return await raceService.updateStageRace(row, config);
+    } catch (error) {
+      // console.log(error);
+      return api.rejectWithValue(error?.response?.data?.message);
+    }
+  }
+);
 export const raceSlice = createSlice({
   name: "race",
   initialState,
@@ -186,6 +211,20 @@ export const raceSlice = createSlice({
           (state.error = action.payload);
       })
       .addCase(editRace.fulfilled, (state, action) => {
+        (state.loading = false),
+          (state.race = action.payload),
+          (state.success = true),
+          (state.error = null);
+      })
+      .addCase(editStageRace.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(editStageRace.rejected, (state, action) => {
+        (state.success = false),
+          (state.loading = false),
+          (state.error = action.payload);
+      })
+      .addCase(editStageRace.fulfilled, (state, action) => {
         (state.loading = false),
           (state.race = action.payload),
           (state.success = true),

@@ -20,8 +20,12 @@ const updateRace = async (row, config) => {
   const response = await axios.put(`${API_URL}/${row.id}`, row, config);
   return await response.data;
 };
-
+const updateStageRace = async (row, config) => {
+  const response = await axios.put(`${API_URL}/${row.id}/stages`, row, config);
+  return await response.data;
+};
 const reportService = {
+  updateStageRace,
   createRace,
   getRace,
   deleteRace,

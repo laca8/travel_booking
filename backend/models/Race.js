@@ -34,8 +34,13 @@ const raceSchema = new mongoose.Schema(
       type: Number,
       required: [true, "من فضلك ادخل عدد المراحل"],
     },
+    pulse: {
+      type: String,
+      required: [true, "من فضلك ادخل النبض"],
+    },
     rounds: [{}],
     players: [],
+    entries: [],
   },
   {
     timestamps: true,

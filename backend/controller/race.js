@@ -10,6 +10,7 @@ const addRace = async (req, res) => {
     rest_time,
     rounds,
     num_rounds,
+    pulse,
     address,
     players,
   } = req.body;
@@ -24,12 +25,14 @@ const addRace = async (req, res) => {
       !vite_time ||
       !rest_time ||
       !address ||
-      !num_rounds
+      !num_rounds ||
+      !pulse
     ) {
       return res.status(400).json({ message: "يجب ادخال جميع الحقول" });
     }
     const newRace = await Race.create({
       date,
+      pulse,
       distance,
       min_speed,
       max_speed,
@@ -66,7 +69,7 @@ const getRaces = async (req, res) => {
   }
 };
 const editRace = async (req, res) => {
-  const { knight, horse, num } = req.body;
+  const { knight, horse, num, entries } = req.body;
   try {
     const raceExist = await Race.findById({ _id: req.params.id });
     const exist = raceExist.players.find(
@@ -92,6 +95,7 @@ const editRace = async (req, res) => {
             horse: req.body.horse,
           },
         },
+        entries,
       },
 
       {
@@ -115,4 +119,35 @@ const deleteRace = async (req, res) => {
     return res.status(500).json({ message: err.message });
   }
 };
-module.exports = { addRace, getRace, editRace, deleteRace, getRaces };
+const editStagesRace = async (req, res) => {
+  const { entries } = req.body;
+  // console.log(entries);
+
+  try {
+    const raceExist = await Race.findById({ _id: req.params.id });
+
+    const race = await Race.findByIdAndUpdate(
+      { _id: req.params.id },
+      {
+        entries,
+      },
+
+      {
+        new: true,
+      }
+    );
+
+    return res.status(201).json({ data: race });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: err.message });
+  }
+};
+module.exports = {
+  addRace,
+  getRace,
+  editRace,
+  deleteRace,
+  getRaces,
+  editStagesRace,
+};

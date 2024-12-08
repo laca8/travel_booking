@@ -2,7 +2,11 @@ import React, { useEffect, useState } from "react";
 import Header from "../../component/features/Header";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { addRace, fetchRaces } from "../../redux/slicers/raceSlicer";
+import {
+  addRace,
+  fetchRaces,
+  removeRace,
+} from "../../redux/slicers/raceSlicer";
 import Loader from "../../component/features/Loader";
 import { toast } from "react-toastify";
 
@@ -22,7 +26,10 @@ const Races = () => {
   useEffect(() => {
     dispatch(fetchRaces());
   }, []);
-
+  const handleDelete = (id) => {
+    dispatch(removeRace(id));
+    dispatch(fetchRaces());
+  };
   return (
     <div className="">
       <div className="bg-[var(--dark-color)]">
@@ -63,8 +70,12 @@ const Races = () => {
                   <th className="px-6 py-4 text-right text-white font-semibold">
                     عدد المراحل
                   </th>
+
                   <th className="px-6 py-4 text-right text-white font-semibold">
                     التسجيل في المسابقة
+                  </th>
+                  <th className="px-6 py-4 text-right text-white font-semibold">
+                    #
                   </th>
                 </tr>
               </thead>
@@ -105,6 +116,7 @@ const Races = () => {
                           {comp?.num_rounds}
                         </span>
                       </td>
+
                       <td className="px-6 py-4 text-right">
                         <button
                           className="font-bold bg-[var(--dark-color)] text-blue-100 p-3 rounded-full text-sm"
@@ -112,6 +124,13 @@ const Races = () => {
                             navigator(`/race-details/${comp?._id}`)
                           }>
                           التسجيل
+                        </button>
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <button
+                          className="font-bold bg-red-500 text-blue-100 p-3 rounded-full text-sm"
+                          onClick={() => handleDelete(comp?._id)}>
+                          حذف
                         </button>
                       </td>
                     </tr>

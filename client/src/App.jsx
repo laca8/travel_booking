@@ -19,6 +19,7 @@ import Trains from "./component/train/Trains";
 import Form from "./component/simile_form/Form";
 import RaceStart from "./component/simile_form/RaceStart";
 import Test from "./component/simile_form/Test";
+import HorseRacingTables from "./component/simile_form/HorceRacingTable";
 function App() {
   return (
     <div>

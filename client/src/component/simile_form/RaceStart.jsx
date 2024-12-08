@@ -154,6 +154,226 @@ const HorseRallyTable = () => {
   };
 
   return (
+    //   <div ref={tableRef} key={i}>
+    //   <table className="w-full border-collapse mb-8 text-[15px] font-bold">
+    //     <thead>
+    //       <tr className="bg-[var(--primary-color)]">
+    //         <th className="border p-2 text-center w-12">#</th>
+    //         <th className="border p-2">اسم الفارس</th>
+
+    //         <th className="border p-2">اسم الحصان</th>
+    //         {race?.data?.rounds?.map((x, i) => (
+    //           <React.Fragment key={i}>
+    //             <th className="border p-2 bg-green-50" colSpan="2">
+    //               المرحلة {i + 1}
+    //             </th>
+    //             <th className="border p-2  " colSpan="12">
+    //               <span>
+    //                 تفاصيل المرحلة {i + 1}
+    //                 {"   "}(المسافة {x?.distance} (كم) )
+    //               </span>
+    //             </th>
+    //           </React.Fragment>
+    //         ))}
+    //       </tr>
+    //       <tr className="bg-[var(--primary-color)]">
+    //         <th className="border p-2 text-center" colSpan="3"></th>
+
+    //         <React.Fragment key={i}>
+    //           <th className="border p-2 bg-green-50">
+    //             وقت البداية
+    //           </th>
+    //           <th className="border p-2 bg-green-50">
+    //             وقت النهاية
+    //           </th>
+    //           <th className="border p-2">المدة</th>
+    //           <th className="border p-2">الزمن (دقائق)</th>
+    //           <th className="border p-2">السرعة (كم/ساعة)</th>
+    //           {/* <th className="border p-2">vet time</th> */}
+    //           <th className="border p-2">max vet time</th>
+    //           <th className="border p-2">pass vet time</th>
+    //           <th className="border p-2">Recovery</th>
+    //           <th className="border p-2">Qualified</th>
+    //           <th className="border p-2">Horse Pulse</th>
+    //           {/* <th className="border p-2">وقت الراحة</th> */}
+    //           <th className="border p-2">total riding</th>
+    //           <th className="border p-2">Dep. Time</th>
+    //         </React.Fragment>
+    //       </tr>
+    //     </thead>
+    //     <tbody>
+    //       <tr key={entry.id} className="hover:bg-gray-50">
+    //         <td className="border p-2 text-center font-medium">
+    //           {entry.id}
+    //         </td>
+    //         <td className="border p-2">
+    //           <input
+    //             type="text"
+    //             disabled
+    //             value={entry.riderName}
+    //             onChange={(e) =>
+    //               setEntries(
+    //                 entries.map((item) =>
+    //                   item.id === entry.id
+    //                     ? { ...item, riderName: e.target.value }
+    //                     : item
+    //                 )
+    //               )
+    //             }
+    //             className="w-28 p-1 border rounded"
+    //             placeholder="اسم الفارس"
+    //           />
+    //         </td>
+    //         <td className="border  p-2">
+    //           <input
+    //             type="text"
+    //             value={entry.horseName}
+    //             disabled
+    //             onChange={(e) =>
+    //               setEntries(
+    //                 entries.map((item) =>
+    //                   item.id === entry.id
+    //                     ? { ...item, horseName: e.target.value }
+    //                     : item
+    //                 )
+    //               )
+    //             }
+    //             className="w-28 p-1 border rounded"
+    //             placeholder="اسم الحصان"
+    //           />
+    //         </td>
+
+    //         {entry.stages.map((stage, stageIndex) => (
+    //           <React.Fragment key={stageIndex}>
+    //             <td className="border p-2 bg-green-50">
+    //               <input
+    //                 type="time"
+    //                 value={stage.startTime}
+    //                 onChange={(e) =>
+    //                   handleChange(
+    //                     entry.id,
+    //                     stageIndex,
+    //                     e.target.value,
+    //                     "startTime"
+    //                   )
+    //                 }
+    //                 className="w-full p-1 border rounded"
+    //               />
+    //             </td>
+    //             <td className="border p-2 bg-green-50">
+    //               <input
+    //                 type="time"
+    //                 value={stage.endTime}
+    //                 disabled={!stage.startTime}
+    //                 onChange={(e) =>
+    //                   handleEndTimeChange(
+    //                     entry.id,
+    //                     stageIndex,
+    //                     e.target.value
+    //                   )
+    //                 }
+    //                 className="w-full p-1 border rounded"
+    //               />
+    //             </td>
+
+    //             <td className="border p-2">{stage.duration}</td>
+    //             <td className="border p-2">
+    //               {stage.timeInMinutes}
+    //             </td>
+    //             <td
+    //               className={`w-full p-1 border rounded text-center ${
+    //                 stage?.speed == 0 && stage?.timeInMinutes == 0
+    //                   ? "bg-gray-50"
+    //                   : (stage?.timeInMinutes != 0 &&
+    //                       stage.speed > race?.data?.max_speed) ||
+    //                     (stage?.timeInMinutes != 0 &&
+    //                       stage.speed < race?.data?.min_speed)
+    //                   ? "bg-red-500"
+    //                   : (stage?.timeInMinutes != 0 &&
+    //                       stage.speed >= race?.data?.min_speed) ||
+    //                     (stage?.timeInMinutes != 0 &&
+    //                       stage.speed <= race?.data?.max_speed)
+    //                   ? "bg-green-500"
+    //                   : "bg-gray-50"
+    //               }`}>
+    //               {stage.speed}
+    //             </td>
+    //             {/* <td className="border p-2">{stage.vetTime}</td> */}
+    //             <td className="border p-2">{stage.lastVetTime}</td>
+    //             <td className="border p-2">
+    //               <input
+    //                 type="time"
+    //                 disabled={!stage.endTime}
+    //                 value={stage.passVetTime}
+    //                 onChange={(e) =>
+    //                   recoveryHandle(
+    //                     entry.id,
+    //                     stageIndex,
+    //                     e.target.value
+    //                   )
+    //                 }
+    //                 className="w-full p-1 border rounded"
+    //               />
+    //             </td>
+    //             <td className="border p-2">{stage.recovery}</td>
+
+    //             <td className="border p-2 bg-green-50">
+    //               <input
+    //                 type="text"
+    //                 value={stage.qualified}
+    //                 onChange={(e) =>
+    //                   handleChange(
+    //                     entry.id,
+    //                     stageIndex,
+    //                     e.target.value,
+    //                     "qualified"
+    //                   )
+    //                 }
+    //                 className={`w-full p-1 border rounded text-center ${
+    //                   stage.qualified == "Q"
+    //                     ? "bg-green-500"
+    //                     : stage.qualified == "E"
+    //                     ? "bg-red-500"
+    //                     : "bg-slate-50"
+    //                 }`}
+    //               />
+    //             </td>
+
+    //             <td
+    //               className={`w-full p-1 border rounded text-center `}>
+    //               <input
+    //                 type="number"
+    //                 value={entry.pulse}
+    //                 onChange={(e) =>
+    //                   handleChange(
+    //                     entry.id,
+    //                     stageIndex,
+    //                     e.target.value,
+    //                     "pulse"
+    //                   )
+    //                 }
+    //                 className={`w-full p-1 border rounded text-center ${
+    //                   stage.pulse == ""
+    //                     ? "bg-gray-50"
+    //                     : Number(stage.pulse) <=
+    //                       Number(race?.data?.pulse)
+    //                     ? "bg-green-500"
+    //                     : Number(stage.pulse) >
+    //                       Number(race?.data?.pulse)
+    //                     ? "bg-red-500"
+    //                     : "bg-gray-50"
+    //                 }`}
+    //               />
+    //             </td>
+    //             {/* <td className="border p-2">{stage.restTime}</td> */}
+    //             <td className="border p-2 ">{stage.totalRiding}</td>
+    //             <td className="border p-2">{stage.finishTime}</td>
+    //           </React.Fragment>
+    //         ))}
+    //       </tr>
+    //     </tbody>
+    //   </table>
+    // </div>
     <div className="raceStart bg-gray-100 p-4 rtl:text-right overflow-x-auto overscroll-x-auto">
       <table className="w-full border-collapse">
         <thead>

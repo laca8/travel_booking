@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import Header from "../features/Header";
 import { NavLink, useNavigate } from "react-router-dom";
 import { X } from "lucide-react";
-
+import { Printer } from "lucide-react";
 import { toast } from "react-toastify";
 import Loader from "../features/Loader";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { fetchRace } from "../../redux/slicers/raceSlicer";
+import { editStageRace, fetchRace } from "../../redux/slicers/raceSlicer";
 
 const DynamicHorseRallyAllStages = () => {
+  const tableRef = useRef(null);
   const dispatch = useDispatch();
   const { id } = useParams();
 
@@ -19,62 +20,76 @@ const DynamicHorseRallyAllStages = () => {
   const raceSlice = useSelector((state) => state.raceSlice);
   const { race, loading, error, success } = raceSlice;
   const [stageCount, setStageCount] = useState(race?.data?.num_rounds);
-  const [entries, setEntries] = useState([]);
+
   const [notify, setNotify] = useState("");
+  const [timeStart, setTimeStart] = useState("");
 
+  const [entries, setEntries] = useState(() => {
+    const savedStages = localStorage.getItem(`raceStages-${id}`);
+    return savedStages ? JSON.parse(savedStages) : race?.data?.entries;
+  });
   useEffect(() => {
-    const initialEntries = Array.from(
-      { length: race?.data?.players?.length },
-      (_, i) => ({
-        id:
-          race?.data?.players?.length != 0
-            ? race?.data?.players?.map((x, index) => {
-                if (index === i) {
-                  return x.num;
-                }
-              })
-            : "",
-        horseName:
-          race?.data?.players?.length != 0
-            ? race?.data?.players?.map((x, index) => {
-                if (index === i) {
-                  const res = x.horse;
-                  console.log(x.horse);
-                  return res;
-                }
-              })[i]
-            : "",
+    localStorage.setItem(`raceStages-${id}`, JSON.stringify(entries));
+  }, [entries]);
+  // useEffect(() => {
+  //   localStorage.setItem("raceStages", JSON.stringify(entries));
+  // }, [entries]);
 
-        riderName:
-          race?.data?.players?.length != 0
-            ? race?.data?.players?.map((x, index) => {
-                if (index === i) {
-                  return x.knight;
-                }
-              })[i]
-            : "",
-        stages: Array.from({ length: stageCount }, (_, j) => ({
-          startTime: "",
-          endTime: "",
-          duration: "",
-          timeInMinutes: 0,
-          speed: "",
-          vetTime: race?.data != null ? race?.data?.vite_time : "",
-          lastVetTime: "",
-          passVetTime: "",
-          recovery: "",
-          qualified: "",
-          pulse: "",
-          restTime: race?.data != null ? race?.data?.rest_time : "",
-          totalRiding: "",
-          finishTime: "",
-        })),
-      })
-    );
-    setEntries(initialEntries);
-  }, [stageCount, id]);
+  // useEffect(() => {
+  //   const initialEntries = Array.from(
+  //     { length: race?.data?.players?.length },
+  //     (_, i) => ({
+  //       id:
+  //         race?.data?.players?.length != 0
+  //           ? race?.data?.players?.map((x, index) => {
+  //               if (index === i) {
+  //                 return x.num;
+  //               }
+  //             })[i]
+  //           : "",
+  //       horseName:
+  //         race?.data?.players?.length != 0
+  //           ? race?.data?.players?.map((x, index) => {
+  //               if (index === i) {
+  //                 const res = x.horse;
+  //                 console.log(x.horse);
+  //                 return res;
+  //               }
+  //             })[i]
+  //           : "",
+
+  //       riderName:
+  //         race?.data?.players?.length != 0
+  //           ? race?.data?.players?.map((x, index) => {
+  //               if (index === i) {
+  //                 return x.knight;
+  //               }
+  //             })[i]
+  //           : "",
+  //       stages: Array.from({ length: stageCount }, (_, j) => ({
+  //         startTime: j == 0 ? timeStart : "",
+  //         endTime: "",
+  //         duration: "",
+  //         timeInMinutes: 0,
+  //         speed: 0,
+  //         vetTime: race?.data != null ? race?.data?.vite_time : "",
+  //         lastVetTime: "",
+  //         passVetTime: "",
+  //         recovery: "",
+  //         qualified: "",
+  //         pulse: "",
+  //         restTime: race?.data != null ? race?.data?.rest_time : "",
+  //         totalRiding: "",
+  //         finishTime: "",
+  //       })),
+  //     })
+  //   );
+  //   setEntries(initialEntries);
+  // }, [stageCount, id, timeStart]);
 
   const calculateDuration = (start, end) => {
+    console.log(start, end);
+
     if (!end) return "";
     const startDate = new Date(`1970/01/01 ${start}`);
 
@@ -87,13 +102,58 @@ const DynamicHorseRallyAllStages = () => {
       .toString()
       .padStart(2, "0")}`;
   };
+  const updateNextStageOrder = (stageIndex) => {
+    if (stageIndex + 1 >= entries.length) return;
+
+    const currentStage = entries[stageIndex];
+    const nextStage = entries[stageIndex + 1];
+
+    // Sort riders by endTime in current stage
+    const sortedRiders = [...currentStage.riders]
+      .filter((rider) => rider.finishTime) // Only include riders who finished
+      .sort((a, b) => {
+        const timeA = new Date(`2024-01-01 ${a.finishTime}`);
+        const timeB = new Date(`2024-01-01 ${b.finishTime}`);
+        return timeA - timeB;
+      });
+
+    // Update order and start times in next stage
+    const updatedNextStageRiders = nextStage.riders.map((rider) => {
+      const finishedRiderIndex = sortedRiders.findIndex(
+        (r) => r.id === rider.id
+      );
+      if (finishedRiderIndex !== -1) {
+        const finishedRider = sortedRiders[finishedRiderIndex];
+        return {
+          ...rider,
+          order: finishedRiderIndex,
+          startTime: finishedRider.finishTime, // Set start time to previous stage's end time
+        };
+      }
+      return {
+        ...rider,
+        order: sortedRiders.length, // Put non-finished riders at the end
+      };
+    });
+
+    // Sort the next stage riders by order
+    updatedNextStageRiders.sort((a, b) => a.order - b.order);
+    console.log(updatedNextStageRiders);
+
+    setEntries((prevStages) => {
+      const newStages = [...prevStages];
+      console.log(newStages);
+
+      newStages[stageIndex + 1].riders = updatedNextStageRiders;
+      return newStages;
+    });
+  };
 
   const calculateTimeInMinutes = (duration) => {
     if (!duration) return 0;
     console.log(duration);
     const [hours, minutes] = duration.split(":").map(Number);
     // console.log(hours, minutes);
-
     return hours * 60 + minutes;
   };
 
@@ -114,17 +174,9 @@ const DynamicHorseRallyAllStages = () => {
     return speed.toFixed(2);
   };
 
-  //   const addMinutesToTime = (time, minutes) => {
-  //     const [hours, mins] = time.split(":").map(Number);
-  //     const totalMinutes = hours * 60 + mins + minutes;
-  //     const newHours = Math.floor(totalMinutes / 60);
-  //     const newMins = totalMinutes % 60;
-  //     return `${newHours.toString().padStart(2, "0")}: ${newMins
-  //       .toString()
-  //       .padStart(2, "0")}`;
-  //   };
-
   const lastVetTimeHandle = (arrive, vetTime) => {
+    console.log(arrive, vetTime);
+
     if (arrive === "") return "";
     const [hours, mins] = arrive.split(":").map(Number);
     const [h, m] = vetTime.split(":").map(Number);
@@ -135,39 +187,52 @@ const DynamicHorseRallyAllStages = () => {
       .toString()
       .padStart(2, "0")}`;
   };
+  const handleEndTimeChange = (riderId, stageIndex, value) => {
+    setEntries((prevStages) => {
+      const newStages = [...prevStages];
+      const rider = newStages[stageIndex].riders.find((r) => r.id === riderId);
 
-  const handleEndTimeChange = (entryId, stageIndex, value) => {
-    setEntries(
-      entries.map((entry) => {
-        if (entry.id === entryId) {
-          const updatedStages = entry.stages.map((stage, index) => {
-            if (index === stageIndex) {
-              const duration = calculateDuration(stage.startTime, value);
-              console.log(duration);
-              const timeInMinutes = calculateTimeInMinutes(duration);
-              const lastCheckTime = lastVetTimeHandle(
-                value,
-                race?.data?.vite_time
-              );
-              const speed = calculateSpeed(index, timeInMinutes);
+      rider["endTime"] = value;
 
-              return {
-                ...stage,
-                endTime: value,
-                duration,
-                timeInMinutes,
-                lastVetTime: lastCheckTime,
-                speed,
-              };
-            }
-            return stage;
-          });
+      if (rider.startTime && rider.endTime) {
+        rider.duration = calculateDuration(rider.startTime, rider.endTime);
+        rider.timeInMinutes = calculateTimeInMinutes(rider.duration);
+        rider.speed = calculateSpeed(stageIndex, rider.timeInMinutes);
+        rider.lastVetTime = lastVetTimeHandle(value, race?.data?.vite_time);
+      }
 
-          return { ...entry, stages: updatedStages };
-        }
-        return entry;
-      })
-    );
+      return newStages;
+    });
+
+    //     if (entry.id === entryId) {
+    //       const updatedStages = entry.stages.map((stage, index) => {
+    //         if (index === stageIndex) {
+    //           const duration = calculateDuration(stage.startTime, value);
+    //           console.log(duration);
+    //           const timeInMinutes = calculateTimeInMinutes(duration);
+    //           const lastCheckTime = lastVetTimeHandle(
+    //             value,
+    //             race?.data?.vite_time
+    //           );
+    //           const speed = calculateSpeed(index, timeInMinutes);
+
+    //           return {
+    //             ...stage,
+    //             endTime: value,
+    //             duration,
+    //             timeInMinutes,
+    //             lastVetTime: lastCheckTime,
+    //             speed,
+    //           };
+    //         }
+    //         return stage;
+    //       });
+
+    //       return { ...entry, stages: updatedStages };
+    //     }
+    //     return entry;
+    //   })
+    // );
   };
   const recoverySum = (passVet, duration) => {
     const startDate = new Date(`1970/01/01 ${duration}`);
@@ -203,59 +268,183 @@ const DynamicHorseRallyAllStages = () => {
       .padStart(2, "0")}`;
     // return { rest, passVet };
   };
-  const recoveryHandle = (entryId, stageIndex, value) => {
-    setEntries(
-      entries.map((entry) => {
-        if (entry.id === entryId) {
-          const updatedStages = entry.stages.map((stage, index) => {
-            if (index === stageIndex) {
-              const recovery = recoverySum(value, stage.endTime);
-              const totalRiding = totalRidingSum(stage.duration, recovery);
-              const finish = finishSum(stage.restTime, value);
+  const qualifySum = (value, max) => {
+    if (max >= value) {
+      return "Q";
+    } else {
+      return "E";
+    }
+  };
+  const recoveryHandle = (riderId, stageIndex, value) => {
+    setEntries((prevStages) => {
+      const newStages = [...prevStages];
+      const rider = newStages[stageIndex]?.riders?.find(
+        (r) => r.id === riderId
+      );
 
-              return {
-                ...stage,
-                passVetTime: value,
-                recovery,
-                totalRiding,
-                finishTime: finish,
-              };
-            }
-            if (index === stageIndex + 1) {
-              console.log(stage.finishTime);
-              return {
-                ...stage,
-                startTime: finishSum(stage.restTime, value),
-              };
-            }
-            return stage;
-          });
+      rider["passVetTime"] = value;
 
-          return { ...entry, stages: updatedStages };
+      if (rider?.passVetTime != "") {
+        rider.recovery = recoverySum(value, rider.endTime);
+        rider.totalRiding = totalRidingSum(rider.duration, rider.recovery);
+        rider.finishTime = finishSum(rider.restTime, value);
+        rider.qualified = qualifySum(value, rider.lastVetTime);
+        if (rider.finishTime != "") {
+          setTimeout(() => updateNextStageOrder(stageIndex), 0);
         }
-        return entry;
-      })
-    );
+      }
+
+      return newStages;
+    });
+    // setEntries(
+    //   entries.map((entry, eIndex) => {
+    //     if (stageIndex === eIndex) {
+    //       const updatedStages = entry.riders.map((stage, index) => {
+    //         if (stage.id === entryId) {
+    //           const recovery = recoverySum(value, stage.endTime);
+    //           const totalRiding = totalRidingSum(stage.duration, recovery);
+    //           const finish = finishSum(stage.restTime, value);
+    //           const qualified = qualifySum(value, stage.lastVetTime);
+    //           return {
+    //             ...stage,
+    //             passVetTime: value,
+    //             recovery,
+    //             qualified,
+    //             totalRiding,
+    //             finishTime: finish,
+    //           };
+    //         }
+    //         if (index === stageIndex + 1) {
+    //           console.log(stage.finishTime);
+    //           return {
+    //             ...stage,
+    //             startTime: finishSum(stage.restTime, value),
+    //           };
+    //         }
+    //         return stage;
+    //       });
+    //       return { ...entry, riders: updatedStages };
+    //     }
+    //     return entry;
+    //   })
+    // );
   };
 
-  const handleChange = (entryId, stageIndex, value, field) => {
-    setEntries(
-      entries.map((entry) => {
-        if (entry.id === entryId) {
-          const updatedStages = entry.stages.map((stage, index) => {
-            if (index === stageIndex) {
-              return {
-                ...stage,
-                [field]: value,
-              };
-            }
-            return stage;
-          });
-          return { ...entry, stages: updatedStages };
+  const handleChange = (riderId, stageIndex, value, field) => {
+    setEntries((prevStages) => {
+      const newStages = [...prevStages];
+      const rider = newStages[stageIndex].riders.find((r) => r.id === riderId);
+      rider[field] = value;
+      return newStages;
+    });
+
+    //   entries.map((entry) =>
+    //     entry.riders.map((x, i) => {
+    //       if (x.id === entryId) {
+    //         const updatedStages = entry.riders.map((stage, index) => {
+    //           if (index === stageIndex) {
+    //             return {
+    //               ...stage,
+    //               [field]: value,
+    //             };
+    //           }
+    //           return stage;
+    //         });
+    //         return { ...entry, riders: updatedStages };
+    //       }
+    //       return entry;
+    //     })
+    //   )
+    // );
+    // setEntries(
+    //   entries.map((entry) => {
+    //     if (entry.id === entryId) {
+    //       const updatedStages = entry.stages.map((stage, index) => {
+    //         if (index === stageIndex) {
+    //           return {
+    //             ...stage,
+    //             [field]: value,
+    //           };
+    //         }
+    //         return stage;
+    //       });
+    //       return { ...entry, stages: updatedStages };
+    //     }
+    //     return entry;
+    //   })
+    // );
+  };
+
+  const printStage = (stageIndex) => {
+    const printContent = document.getElementById(`stage-${stageIndex}`);
+    const originalContent = document.body.innerHTML;
+
+    // Create print-specific styles
+    const style = document.createElement("style");
+    style.textContent = `
+        @media print {
+          body * {
+            visibility: hidden;
+          }
+          #stage-${stageIndex}, #stage-${stageIndex} * {
+            visibility: visible;
+          }
+          #stage-${stageIndex} {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+          }
+          .no-print {
+            display: none !important;
+          }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+          }
+          th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: right;
+          }
+          th {
+            background-color: #f0f0f0;
+          }
+          @page {
+            size: landscape;
+            margin: 2cm;
+          }
         }
-        return entry;
-      })
-    );
+      `;
+
+    document.head.appendChild(style);
+    window.print();
+    document.head.removeChild(style);
+  };
+  const handleStartTime = (value) => {
+    setTimeStart((prev) => {
+      prev: value;
+    });
+    setEntries((prevStages) => {
+      const newStages = [...prevStages];
+      const rider = newStages[0].riders.map((x) => {
+        if (x.startTime == "") {
+          x["startTime"] = value;
+        }
+      });
+
+      return newStages;
+    });
+  };
+
+  const handleSave = () => {
+    const row = {
+      id: id,
+      entries: localStorage.getItem(`raceStages-${id}`, JSON.parse(entries)),
+    };
+    dispatch(editStageRace(row));
+    dispatch(fetchRace(id));
   };
   return (
     <>
@@ -277,7 +466,7 @@ const DynamicHorseRallyAllStages = () => {
               </h3>
             </div>
             <div className="raceStart p-4 rtl:text-right overflow-x-auto bg-gray-100 rounded-md">
-              <div className="flex gap-4 text-lg">
+              <div className="flex flex-wrap gap-4 text-[13px]">
                 <div className="mb-4">
                   <label
                     htmlFor="stageCount"
@@ -337,189 +526,357 @@ const DynamicHorseRallyAllStages = () => {
                     className="w-24 p-2 border rounded font-bold  bg-yellow-300 text-black text-center"
                   />
                 </div>
+                <div className="mb-4">
+                  <label
+                    htmlFor="stageCount"
+                    className="block font-bold text-gray-700 mb-2">
+                    النبض
+                  </label>
+                  <input
+                    type="number"
+                    id="stageCount"
+                    disabled
+                    value={race?.data?.pulse}
+                    className="w-24 p-2 border rounded font-bold  bg-yellow-300 text-black text-center"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label
+                    htmlFor="stageCount"
+                    className="block font-bold text-gray-700 mb-2">
+                    vet time
+                  </label>
+                  <input
+                    type="text"
+                    id="stageCount"
+                    disabled
+                    value={race?.data?.vite_time}
+                    className="w-24 p-2 border rounded font-bold  bg-yellow-300 text-black text-center"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label
+                    htmlFor="stageCount"
+                    className="block font-bold text-gray-700 mb-2">
+                    rest time
+                  </label>
+                  <input
+                    type="text"
+                    id="stageCount"
+                    disabled
+                    value={race?.data?.rest_time}
+                    className="w-24 p-2 border rounded font-bold  bg-yellow-300 text-black text-center"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label
+                    htmlFor="stageCount"
+                    className="block font-bold text-gray-700 mb-2">
+                    البداية
+                  </label>
+                  <input
+                    type="time"
+                    value={timeStart}
+                    onChange={(e) => handleStartTime(e.target.value)}
+                    className="w-28 p-2 border rounded font-bold  bg-yellow-300 text-black text-center"
+                  />
+                </div>
+                {race?.data?.rounds?.map((x, i) => (
+                  <div className="mb-4" key={i}>
+                    <label
+                      htmlFor="stageCount"
+                      className="block font-bold text-gray-700 mb-2">
+                      أقصي زمن للمرحلة {i + 1}
+                    </label>
+                    <input
+                      type="text"
+                      id="stageCount"
+                      disabled
+                      value={` ${(
+                        (x.distance / race?.data?.max_speed) *
+                        60
+                      ).toFixed(0)} دقيقة`}
+                      className="w-24 p-2 border rounded font-bold  bg-yellow-300 text-black text-center"
+                    />
+                  </div>
+                ))}
+                <div className="mb-4">
+                  <label
+                    htmlFor="stageCount"
+                    className="block font-bold  mb-2 text-white">
+                    save
+                  </label>
+                  <button
+                    onClick={() => handleSave()}
+                    className="bg-[var(--dark-color)] p-2 text-white w-24 rounded-md hover:scale-95 transition-all font-bold ">
+                    حفظ
+                  </button>
+                </div>
               </div>
 
-              <table className="w-full border-collapse mb-8 text-lg font-bold">
-                <thead>
-                  <tr className="bg-[var(--primary-color)]">
-                    <th className="border p-2 text-center w-12">#</th>
-                    <th className="border p-2">اسم الفارس</th>
+              {entries.map((stage, stageIndex) => (
+                <div
+                  key={stage.id}
+                  className="mb-8 border rounded-lg p-4 bg-white shadow w-full overflow-x-auto">
+                  <div className="mb-4 flex justify-between items-center">
+                    <h2 className="text-xl font-bold">
+                      المرحلة {stage.id + 1}
+                    </h2>
+                    <button
+                      onClick={() => printStage(stageIndex)}
+                      className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 no-print">
+                      <Printer size={20} />
+                      طباعة المرحلة
+                    </button>
+                  </div>
 
-                    <th className="border p-2">اسم الحصان</th>
-                    {race?.data?.rounds?.map((x, i) => (
-                      <React.Fragment key={i}>
-                        <th className="border p-2 bg-green-50" colSpan="2">
-                          المرحلة {i + 1}
-                        </th>
-                        <th className="border p-2  " colSpan="12">
-                          <span>
-                            تفاصيل المرحلة {i + 1}
-                            {"   "}(المسافة {x?.distance} (كم) )
-                          </span>
-                        </th>
-                      </React.Fragment>
-                    ))}
-                  </tr>
-                  <tr className="bg-[var(--primary-color)]">
-                    <th className="border p-2 text-center" colSpan="3"></th>
-                    {Array.from({ length: stageCount }, (_, i) => (
-                      <React.Fragment key={i}>
-                        <th className="border p-2 bg-green-50">وقت البداية</th>
-                        <th className="border p-2 bg-green-50">وقت النهاية</th>
-                        <th className="border p-2">المدة</th>
-                        <th className="border p-2">الزمن (دقائق)</th>
-                        <th className="border p-2">السرعة (كم/ساعة)</th>
-                        <th className="border p-2">vet time</th>
-                        <th className="border p-2">max vet time</th>
-                        <th className="border p-2">pass vet time</th>
-                        <th className="border p-2">Recovery</th>
-                        <th className="border p-2">Qualified</th>
-                        <th className="border p-2">Horse Pulse</th>
-                        <th className="border p-2">وقت الراحة</th>
-                        <th className="border p-2">total riding</th>
-                        <th className="border p-2">Dep. Time</th>
-                      </React.Fragment>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {entries.map((entry) => (
-                    <tr key={entry.id} className="hover:bg-gray-50">
-                      <td className="border p-2 text-center font-medium">
-                        {entry.id}
-                      </td>
-                      <td className="border p-2">
-                        <input
-                          type="text"
-                          disabled
-                          value={entry.riderName}
-                          onChange={(e) =>
-                            setEntries(
-                              entries.map((item) =>
-                                item.id === entry.id
-                                  ? { ...item, riderName: e.target.value }
-                                  : item
-                              )
-                            )
-                          }
-                          className="w-28 p-1 border rounded"
-                          placeholder="اسم الفارس"
-                        />
-                      </td>
-                      <td className="border  p-2">
-                        <input
-                          type="text"
-                          value={entry.horseName}
-                          disabled
-                          onChange={(e) =>
-                            setEntries(
-                              entries.map((item) =>
-                                item.id === entry.id
-                                  ? { ...item, horseName: e.target.value }
-                                  : item
-                              )
-                            )
-                          }
-                          className="w-28 p-1 border rounded"
-                          placeholder="اسم الحصان"
-                        />
-                      </td>
+                  <table
+                    className="w-full border-collapse"
+                    id={`stage-${stageIndex}`}>
+                    <thead>
+                      <tr className="bg-[var(--primary-color)]">
+                        <th className="border p-2 text-center w-12">#</th>
+                        <th className="border p-2">اسم الفارس</th>
 
-                      {entry.stages.map((stage, stageIndex) => (
+                        <th className="border p-2">اسم الحصان</th>
+
                         <React.Fragment key={stageIndex}>
-                          <td className="border p-2 bg-green-50">
-                            <input
-                              type="time"
-                              value={stage.startTime}
-                              onChange={(e) =>
-                                handleChange(
-                                  entry.id,
-                                  stageIndex,
-                                  e.target.value,
-                                  "startTime"
-                                )
-                              }
-                              className="w-full p-1 border rounded"
-                            />
-                          </td>
-                          <td className="border p-2 bg-green-50">
-                            <input
-                              type="time"
-                              value={stage.endTime}
-                              disabled={!stage.startTime}
-                              onChange={(e) =>
-                                handleEndTimeChange(
-                                  entry.id,
-                                  stageIndex,
-                                  e.target.value
-                                )
-                              }
-                              className="w-full p-1 border rounded"
-                            />
-                          </td>
-
-                          <td className="border p-2">{stage.duration}</td>
-                          <td className="border p-2">{stage.timeInMinutes}</td>
-                          <td className="border p-2">{stage.speed}</td>
-                          <td className="border p-2">{stage.vetTime}</td>
-                          <td className="border p-2">{stage.lastVetTime}</td>
-                          <td className="border p-2">
-                            <input
-                              type="time"
-                              disabled={!stage.endTime}
-                              value={stage.passVetTime}
-                              onChange={(e) =>
-                                recoveryHandle(
-                                  entry.id,
-                                  stageIndex,
-                                  e.target.value
-                                )
-                              }
-                              className="w-full p-1 border rounded"
-                            />
-                          </td>
-                          <td className="border p-2">{stage.recovery}</td>
-
-                          <td className="border p-2 bg-green-50">
-                            <input
-                              type="text"
-                              value={stage.qualified}
-                              onChange={(e) =>
-                                handleChange(
-                                  entry.id,
-                                  stageIndex,
-                                  e.target.value,
-                                  "qualified"
-                                )
-                              }
-                              className="w-full p-1 border rounded"
-                            />
-                          </td>
-
-                          <td className="border p-2 bg-green-50">
-                            <input
-                              type="text"
-                              value={entry.pulse}
-                              onChange={(e) =>
-                                handleChange(
-                                  entry.id,
-                                  stageIndex,
-                                  e.target.value,
-                                  "pulse"
-                                )
-                              }
-                              className="w-full p-1 border rounded"
-                            />
-                          </td>
-                          <td className="border p-2">{stage.restTime}</td>
-                          <td className="border p-2 ">{stage.totalRiding}</td>
-                          <td className="border p-2">{stage.finishTime}</td>
+                          <th className="border p-2 bg-green-50" colSpan="2">
+                            المرحلة {stageIndex + 1}
+                          </th>
+                          <th className="border p-2  " colSpan="10">
+                            <span>
+                              تفاصيل المرحلة {stageIndex + 1}
+                              {"   "}(المسافة {stage?.distance} (كم) )
+                            </span>
+                          </th>
                         </React.Fragment>
+                      </tr>
+                      <tr className="bg-[var(--primary-color)]">
+                        <th className="border p-2 text-center" colSpan="3"></th>
+
+                        <React.Fragment key={stageIndex}>
+                          <th className="border p-2 bg-green-50">
+                            وقت البداية
+                          </th>
+                          <th className="border p-2 bg-green-50">
+                            وقت النهاية
+                          </th>
+                          <th className="border p-2 w-20">المدة</th>
+                          <th className="border p-2 w-20">الزمن (دقائق)</th>
+                          <th className="border p-2 w-20">السرعة (كم/ساعة)</th>
+                          {/* <th className="border p-2">vet time</th> */}
+                          <th className="border p-2 w-20">max vet time</th>
+                          <th className="border p-2 w-20">pass vet time</th>
+                          <th className="border p-2 w-20">Recovery</th>
+                          <th className="border p-2 w-20">Qualified</th>
+                          <th className="border p-2 w-20">Horse Pulse</th>
+                          {/* <th className="border p-2">وقت الراحة</th> */}
+                          <th className="border p-2 w-20">total riding</th>
+                          <th className="border p-2 w-20">Dep. Time</th>
+                        </React.Fragment>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {stage?.riders?.map((rider, index) => (
+                        <tr key={index}>
+                          <React.Fragment key={stageIndex}>
+                            <td className="border p-2 text-center font-medium">
+                              {rider.id}
+                            </td>
+                            <td className="border p-2">
+                              <input
+                                type="text"
+                                disabled
+                                value={rider.riderName}
+                                className="w-28 p-1 border rounded"
+                                placeholder="اسم الفارس"
+                              />
+                            </td>
+                            <td className="border  p-2">
+                              <input
+                                type="text"
+                                value={rider.horseName}
+                                disabled
+                                className="w-28 p-1 border rounded"
+                                placeholder="اسم الحصان"
+                              />
+                            </td>
+                            <td className="border p-2 bg-green-50">
+                              <input
+                                type="time"
+                                value={rider.startTime}
+                                onChange={(e) =>
+                                  handleChange(
+                                    rider.id,
+                                    stageIndex,
+                                    e.target.value,
+                                    "startTime"
+                                  )
+                                }
+                                className="w-full p-1 border rounded"
+                              />
+                            </td>
+                            <td className="border p-2 bg-green-50">
+                              <input
+                                type="time"
+                                value={rider.endTime}
+                                disabled={!rider.startTime}
+                                onChange={(e) =>
+                                  handleEndTimeChange(
+                                    rider.id,
+                                    stageIndex,
+                                    e.target.value
+                                  )
+                                }
+                                className="w-full p-1 border rounded"
+                              />
+                            </td>
+
+                            <td className="border p-2">{rider.duration}</td>
+                            <td className="border p-2">
+                              {rider.timeInMinutes}
+                            </td>
+                            <td
+                              className={`w-28 p-1 border rounded text-center ${
+                                rider?.speed == 0 && rider?.timeInMinutes == 0
+                                  ? "bg-gray-50"
+                                  : (rider?.timeInMinutes != 0 &&
+                                      rider.speed > race?.data?.max_speed) ||
+                                    (rider?.timeInMinutes != 0 &&
+                                      rider.speed < race?.data?.min_speed)
+                                  ? "bg-red-500"
+                                  : (rider?.timeInMinutes != 0 &&
+                                      rider.speed >= race?.data?.min_speed) ||
+                                    (rider?.timeInMinutes != 0 &&
+                                      rider.speed <= race?.data?.max_speed)
+                                  ? "bg-green-500"
+                                  : "bg-gray-50"
+                              }`}>
+                              {rider.speed}
+                            </td>
+                            {/* <td className="border p-2">{rider.vetTime}</td> */}
+                            <td className="border p-2">{rider.lastVetTime}</td>
+                            <td className="border p-2">
+                              <input
+                                type="time"
+                                disabled={!rider.endTime}
+                                value={rider.passVetTime}
+                                onChange={(e) =>
+                                  recoveryHandle(
+                                    rider.id,
+                                    stageIndex,
+                                    e.target.value
+                                  )
+                                }
+                                className="w-full p-1 border rounded"
+                              />
+                            </td>
+                            <td className="border p-2">{rider.recovery}</td>
+
+                            <td className="border p-2 bg-green-50">
+                              <input
+                                type="text"
+                                value={rider.qualified}
+                                onChange={(e) =>
+                                  handleChange(
+                                    rider.id,
+                                    stageIndex,
+                                    e.target.value,
+                                    "qualified"
+                                  )
+                                }
+                                className={`w-full p-1 border rounded text-center ${
+                                  rider.qualified == "Q"
+                                    ? "bg-green-500"
+                                    : rider.qualified == "E"
+                                    ? "bg-red-500"
+                                    : "bg-slate-50"
+                                }`}
+                              />
+                            </td>
+
+                            <td
+                              className={`w-full p-1 border rounded text-center `}>
+                              <input
+                                type="number"
+                                value={rider.pulse}
+                                onChange={(e) =>
+                                  handleChange(
+                                    rider.id,
+                                    stageIndex,
+                                    e.target.value,
+                                    "pulse"
+                                  )
+                                }
+                                className={`w-28 p-1 border rounded text-center ${
+                                  rider.pulse == ""
+                                    ? "bg-gray-50"
+                                    : Number(rider.pulse) <=
+                                      Number(race?.data?.pulse)
+                                    ? "bg-green-500"
+                                    : Number(rider.pulse) >
+                                      Number(race?.data?.pulse)
+                                    ? "bg-red-500"
+                                    : "bg-gray-50"
+                                }`}
+                              />
+                            </td>
+                            {/* <td className="border p-2">{rider.restTime}</td> */}
+                            <td className="border p-2 ">{rider.totalRiding}</td>
+                            <td className="border p-2">{rider.finishTime}</td>
+                          </React.Fragment>
+                        </tr>
                       ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                    </tbody>
+                    <tfoot dir="ltr">
+                      <tr>
+                        <td className="border p-2 text-lg" colSpan="3">
+                          (Total Riders {stage?.riders?.length})
+                        </td>
+                        <td
+                          className="border p-2 text-lg text-green-500"
+                          colSpan="6">
+                          (
+                          {
+                            stage?.riders?.filter((x) => x.qualified == "Q")
+                              ?.length
+                          }{" "}
+                          Passes = ({" "}
+                          {`${(
+                            (Number(
+                              stage?.riders?.filter((x) => x.qualified == "Q")
+                                ?.length
+                            ) *
+                              100) /
+                            Number(stage?.riders?.length)
+                          ).toFixed(0)} %`}
+                          ))
+                        </td>
+                        <td
+                          className="border p-2 text-lg text-red-500"
+                          colSpan="6">
+                          (
+                          {
+                            stage?.riders?.filter((x) => x.qualified == "E")
+                              ?.length
+                          }{" "}
+                          Not Qualified) ={" "}
+                          {`${(
+                            (Number(
+                              stage?.riders?.filter((x) => x.qualified == "E")
+                                ?.length
+                            ) *
+                              100) /
+                            Number(stage?.riders?.length)
+                          ).toFixed(0)} %`}
+                          ))
+                        </td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              ))}
             </div>
           </>
         )

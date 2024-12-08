@@ -14,6 +14,7 @@ const Champion = () => {
   const [max_speed, setMax] = useState(0);
   const [vite_time, setVite] = useState(0);
   const [rest, setRest] = useState(0);
+  const [pulse, setPulse] = useState(0);
   const [address, setAddress] = useState("");
   const [arrLevels, setArrLevels] = useState(null);
   const [notify, setNotify] = useState("");
@@ -64,12 +65,29 @@ const Champion = () => {
       num_rounds: levels,
       rounds: arrLevels,
       address: address,
+      pulse,
     };
     console.log(row);
+    const all = arrLevels
+      .map((x) => Number(x.distance))
+      .reduce((acc, val) => acc + val, 0);
+    console.log(all);
 
+    if (max_speed < min_speed) {
+      notify(
+        toast.info("من فضلك أقصي سرعة يجب أن تكون أكبر من او تساوي أدني سرعة")
+      );
+    }
+
+    if (all > distance || all < distance) {
+      notify(
+        toast.info("من فضلك المسافة الكلية يجب أن تساوي مجموع مسافات المراحل")
+      );
+    }
     dispatch(addRace(row));
     if (success) {
       setNotify(toast.success("تم اضافة بيانات المسابقة"));
+      navigator("/races-details");
     }
   };
   toast.options = {
@@ -154,7 +172,7 @@ const Champion = () => {
               حد أقصى للسرعة/ كم
             </label>
             <input
-              min={0}
+              min={min_speed}
               value={max_speed}
               onChange={(e) => setMax(e.target.value)}
               type="number"
@@ -189,6 +207,19 @@ const Champion = () => {
               placeholder="rest time"
               value={rest}
               onChange={(e) => setRest(e.target.value)}
+              className="p-2 bg-[var(--white-color)] text-black w-full text-sm border-2 border-[var(--dark-color)] focus:border-[var(--dark-color)] rounded "
+            />
+          </div>
+          <div className="items-center">
+            <label className="text-[18px] text-[var(--dark-color)] font-bold">
+              النبض
+            </label>
+            <input
+              min={0}
+              type="number"
+              placeholder="النبض"
+              value={pulse}
+              onChange={(e) => setPulse(e.target.value)}
               className="p-2 bg-[var(--white-color)] text-black w-full text-sm border-2 border-[var(--dark-color)] focus:border-[var(--dark-color)] rounded "
             />
           </div>

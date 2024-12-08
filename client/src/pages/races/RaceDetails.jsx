@@ -2,7 +2,11 @@ import React, { useEffect, useState } from "react";
 import Header from "../../component/features/Header";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { editRace, fetchRace } from "../../redux/slicers/raceSlicer";
+import {
+  editRace,
+  editStageRace,
+  fetchRace,
+} from "../../redux/slicers/raceSlicer";
 import Loader from "../../component/features/Loader";
 import { toast } from "react-toastify";
 import { useParams } from "react-router-dom";
@@ -10,11 +14,11 @@ import { fetchHorse, fetchHorses } from "../../redux/slicers/horseSlicer";
 import { fetchKnight, fetchKnights } from "../../redux/slicers/knightSlicer";
 function InfoItem({ label, value }) {
   return (
-    <div className="bg-gray-50 p-2 rounded">
-      <span className="text-xs  text-[var(--primary-color)] block font-bold">
+    <div className="bg-gray-50 p-2 rounded ">
+      <span className="text-xs  text-[var(--primary-color)] block font-bold w-full">
         {label}
       </span>
-      <span className="text-sm font-semibold text-gray-800">{value}</span>
+      <span className="text-sm font-semibold text-gray-800 ">{value}</span>
     </div>
   );
 }
@@ -37,6 +41,7 @@ const Race = () => {
   }, [id]);
   const [riderName, setRiderName] = useState("");
   const [horseName, setHorseName] = useState("");
+  const [entry, setEntry] = useState([]);
   const [num, setNum] = useState(0);
 
   const handleSubmit = () => {
@@ -59,7 +64,72 @@ const Race = () => {
   }, []);
   const knightSlice = useSelector((state) => state.knightSlice);
   const { knights } = knightSlice;
+  const handleRace = () => {
+    const arr = Array.from({ length: race?.data?.num_rounds }, (_, i) => ({
+      id: i,
+      distance: race?.data?.rounds?.map((x, index) => {
+        if (index === i) {
+          return x.distance;
+        }
+      })[i],
+      riders: Array.from({ length: race?.data?.players?.length }, (_, i) => ({
+        id:
+          race?.data?.players?.length != 0
+            ? race?.data?.players?.map((x, index) => {
+                if (index === i) {
+                  return x.num;
+                }
+              })[i]
+            : "",
 
+        riderName:
+          race?.data?.players?.length != 0
+            ? race?.data?.players?.map((x, index) => {
+                if (index === i) {
+                  return x.knight;
+                }
+              })[i]
+            : "",
+        horseName:
+          race?.data?.players?.length != 0
+            ? race?.data?.players?.map((x, index) => {
+                if (index === i) {
+                  const res = x.horse;
+                  console.log(x.horse);
+                  return res;
+                }
+              })[i]
+            : "",
+
+        startTime: "",
+        endTime: "",
+        duration: "",
+        timeInMinutes: 0,
+        speed: 0,
+        vetTime: race?.data != null ? race?.data?.vite_time : "",
+        lastVetTime: "",
+        passVetTime: "",
+        recovery: "",
+        qualified: "",
+        pulse: "",
+        restTime: race?.data != null ? race?.data?.rest_time : "",
+        totalRiding: "",
+        finishTime: "",
+      })),
+    }));
+    const row = { id: id, entries: arr };
+    const ent = localStorage.getItem(`raceStages-${id}`);
+
+    localStorage.setItem(
+      `raceStages-${id}`,
+      JSON.stringify(race?.data?.entries)
+    );
+
+    if (race?.data?.entries.length == 0) {
+      dispatch(editStageRace(row));
+    }
+    navigator(`/race/start/${id}`);
+  };
   return (
     <div className="">
       <div className="bg-[var(--dark-color)]">
@@ -78,7 +148,7 @@ const Race = () => {
               <h2 className="text-xl font-semibold mb-4">تفاصيل المسابقة</h2>
 
               <button
-                onClick={() => navigator(`/race/start/${race?.data?._id}`)}
+                onClick={() => handleRace(race?.date?._id)}
                 className="text-sm bg-yellow-700 shadow-2xl text-[var(--white-color)] p-2 rounded-md font-bold mb-2 hover:scale-95 transition-all duration-300">
                 الي السباق
               </button>
