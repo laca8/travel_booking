@@ -1,7 +1,7 @@
 import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Dropdown } from "flowbite-react";
-
+import icon from "../../assets/img/icon.jpg";
 const Header = () => {
   const navigator = useNavigate();
   const user = localStorage.getItem("user");
@@ -17,7 +17,7 @@ const Header = () => {
           <a href="javascript:void(0)">
             <img
               onClick={() => navigator("/")}
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRe2oI4DeMonhpG4-7IbcqfAj4IqxNwFL24qA&s"
+              src={icon}
               alt="logo"
               className="w-14 rounded-xl"
             />
