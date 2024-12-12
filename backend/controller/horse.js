@@ -102,8 +102,21 @@ const getHorse = async (req, res) => {
   }
 };
 const getHorses = async (req, res) => {
+  const { color, sex, type } = req.query;
+  const filter = { buying: true };
+  if (color) {
+    filter.color = color;
+  }
+  if (sex) {
+    filter.sex = sex;
+  }
+  if (type) {
+    filter.type = type;
+  }
+  // console.log(filter);
+
   try {
-    const horses = await Horse.find({});
+    const horses = await Horse.find(filter);
     // if (!horse) {
     //   return res.status(400).json({ message: "لم تقم باضافة اي خيل من قبل " });
     // }

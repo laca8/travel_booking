@@ -148,6 +148,7 @@ const Race = () => {
               <h2 className="text-xl font-semibold mb-4">تفاصيل المسابقة</h2>
 
               <button
+                disabled={loading}
                 onClick={() => handleRace(race?.date?._id)}
                 className="text-sm bg-yellow-700 shadow-2xl text-[var(--white-color)] p-2 rounded-md font-bold mb-2 hover:scale-95 transition-all duration-300">
                 الي السباق

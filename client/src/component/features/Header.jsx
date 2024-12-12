@@ -113,6 +113,14 @@ const Header = () => {
               ) : null}
               <li className=" border-gray-300  px-3">
                 <NavLink
+                  to="/buy-horse"
+                  activeClassName="active"
+                  className="text-white block font-semibold text-[15px]">
+                  الخيول
+                </NavLink>
+              </li>
+              <li className=" border-gray-300  px-3">
+                <NavLink
                   to="/contact"
                   activeClassName="active"
                   className="text-white block font-semibold text-[15px]">

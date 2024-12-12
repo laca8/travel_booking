@@ -1,7 +1,10 @@
 import axios from "axios";
 const API_URL = "/api/horse";
-const getHorses = async (config) => {
-  const response = await axios.get(`${API_URL}/all`, config);
+const getHorses = async (keyword, config) => {
+  const response = await axios.get(
+    `${API_URL}/all?color=${keyword.color}&&sex=${keyword.sex}&&type=${keyword.type}`,
+    config
+  );
   return response.data;
 };
 const getHorse = async (config) => {

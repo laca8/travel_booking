@@ -6,7 +6,6 @@ const horseSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "user",
     },
-
     name: {
       type: String,
       required: [true, "من فضلك ادخل الاسم"],
@@ -46,7 +45,6 @@ const horseSchema = new mongoose.Schema(
     champions: {
       type: String,
     },
-
     buying: {
       type: Boolean,
       default: false,

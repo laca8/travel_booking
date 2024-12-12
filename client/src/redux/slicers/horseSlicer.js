@@ -51,27 +51,30 @@ export const fetchHorse = createAsyncThunk("fetchHorse", async (_, api) => {
   }
 });
 
-export const fetchHorses = createAsyncThunk("fetchHorses", async (_, api) => {
-  try {
-    // console.log(api);
+export const fetchHorses = createAsyncThunk(
+  "fetchHorses",
+  async (keyword, api) => {
+    try {
+      // console.log(api);
 
-    const appData = api.getState();
-    const { user } = appData.userSlice;
-    // console.log(user);
+      const appData = api.getState();
+      const { user } = appData.userSlice;
+      // console.log(user);
 
-    const config = {
-      headers: {
-        // "Content-Type": "application/json",
-        authorization: user.token,
-      },
-    };
+      const config = {
+        headers: {
+          // "Content-Type": "application/json",
+          authorization: user.token,
+        },
+      };
 
-    return await horseService.getHorses(config);
-  } catch (error) {
-    // console.log(error);
-    return api.rejectWithValue(error?.response?.data?.message);
+      return await horseService.getHorses(keyword, config);
+    } catch (error) {
+      // console.log(error);
+      return api.rejectWithValue(error?.response?.data?.message);
+    }
   }
-});
+);
 
 export const removeHorse = createAsyncThunk("removeHorse", async (id, api) => {
   try {

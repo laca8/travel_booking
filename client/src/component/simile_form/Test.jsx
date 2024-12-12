@@ -10,6 +10,7 @@ import { useParams } from "react-router-dom";
 import { editStageRace, fetchRace } from "../../redux/slicers/raceSlicer";
 import vision from "../../assets/img/vision.jpg";
 import equ from "../../assets/img/equ.jpg";
+import icon from "../../assets/img/icon.jpg";
 const DynamicHorseRallyAllStages = () => {
   const tableRef = useRef(null);
   const dispatch = useDispatch();
@@ -269,13 +270,27 @@ const DynamicHorseRallyAllStages = () => {
       .padStart(2, "0")}`;
     // return { rest, passVet };
   };
-  const qualifySum = (value, max) => {
-    if (max >= value) {
-      return "Q";
-    } else {
-      return "E";
-    }
-  };
+  // const qualifySum = (value, max, speed, pulse) => {
+  //   console.log(
+  //     Number(speed),
+  //     Number(race?.data?.max_speed),
+  //     Number(race?.data?.min_speed)
+  //   );
+  //   if (
+  //     max < value ||
+  //     speed > race?.data?.max_speed ||
+  //     max < value ||
+  //     speed < race?.data?.min_speed
+  //   ) {
+  //     return "E";
+  //   } else if (
+  //     (max >= value && speed <= race?.data?.max_speed) ||
+  //     (max <= value && speed <= race?.data?.max_speed)
+  //   ) {
+  //     return "Q";
+  //   }
+  // };
+
   const recoveryHandle = (riderId, stageIndex, value) => {
     setEntries((prevStages) => {
       const newStages = [...prevStages];
@@ -289,7 +304,12 @@ const DynamicHorseRallyAllStages = () => {
         rider.recovery = recoverySum(value, rider.endTime);
         rider.totalRiding = totalRidingSum(rider.duration, rider.recovery);
         rider.finishTime = finishSum(rider.restTime, value);
-        rider.qualified = qualifySum(value, rider.lastVetTime);
+        // rider.qualified = qualifySum(
+        //   value,
+        //   rider.lastVetTime,
+        //   rider.speed,
+        //   rider.pulse
+        // );
         if (rider.finishTime != "") {
           setTimeout(() => updateNextStageOrder(stageIndex), 0);
         }
@@ -386,7 +406,8 @@ const DynamicHorseRallyAllStages = () => {
         @media print {
           body * {
             visibility: hidden;
-            font-size:10px;
+            font-size:17px;
+            
           
           }
           #stage-${stageIndex}, #stage-${stageIndex}  * {
@@ -410,6 +431,7 @@ const DynamicHorseRallyAllStages = () => {
         background-color: whitesmoke;
               width: 85%;
             margin:auto;
+            direction:ltr
 
 
       
@@ -662,10 +684,13 @@ const DynamicHorseRallyAllStages = () => {
                     <div className="hidden print:block w-[97%] m-auto bg-[white]  text-black">
                       <div className="flex items-center justify-between mb-4 ">
                         <img src={equ} alt="شعار المؤسسة" className="h-32" />
+                        <div className="flex flex-col items-center gap-4">
+                          <img src={icon} alt="شعار المؤسسة" className="h-16" />
 
-                        <h1 className="text-xl font-bold">
-                          Egyptian Equestrian Federation
-                        </h1>
+                          <h1 className="text-lg font-bold border-2 border-gray-800 rounded-md p-1">
+                            {race?.data?.address}
+                          </h1>
+                        </div>
 
                         <img src={vision} alt="شعار المؤسسة" className="h-14" />
                       </div>
@@ -675,15 +700,19 @@ const DynamicHorseRallyAllStages = () => {
                       <thead>
                         <tr className="bg-[var(--primary-color)]">
                           <th className="border p-2 text-center w-12">#</th>
-                          <th className="border p-2">Rider Name</th>
+                          <th className="border p-2 text-center">Rider Name</th>
 
-                          <th className="border p-2">Horse</th>
+                          <th className="border p-2 text-center">Horse</th>
 
                           <React.Fragment key={stageIndex}>
-                            <th className="border p-2 bg-green-50" colSpan="2">
+                            <th
+                              className="border p-2 bg-green-50 text-center"
+                              colSpan="2">
                               Round {stageIndex + 1}
                             </th>
-                            <th className="border p-2  " colSpan="10">
+                            <th
+                              className="border p-2  text-center"
+                              colSpan="10">
                               <span>
                                 Round {stageIndex + 1} Details (distance{" "}
                                 {stage?.distance} (km) )
@@ -697,19 +726,24 @@ const DynamicHorseRallyAllStages = () => {
                             colSpan="3"></th>
 
                           <React.Fragment key={stageIndex}>
-                            <th className="border p-2 bg-green-50">Start</th>
-                            <th className="border p-2 bg-green-50">
+                            <th className="border p-2 bg-green-50 text-center">
+                              Start
+                            </th>
+                            <th className="border p-2 bg-green-50 text-center">
                               Arrival Time
                             </th>
                             <th className="border p-2 w-20">Riding Time</th>
-                            <th className="border p-2 w-20">Minutes Time</th>
+                            {/* <th className="border p-2 w-20">Minutes Time</th> */}
                             <th className="border p-2 w-20">Speed (km/h)</th>
                             {/* <th className="border p-2">vet time</th> */}
                             <th className="border p-2 w-20">max vet time</th>
                             <th className="border p-2 w-20">pass vet time</th>
                             <th className="border p-2 w-20">Recovery</th>
+                            <th className="border p-2 text-center">
+                              Horse Pulse
+                            </th>
                             <th className="border p-2 w-20">Qualified</th>
-                            <th className="border p-2 w-20">Horse Pulse</th>
+
                             {/* <th className="border p-2">وقت الراحة</th> */}
                             <th className="border p-2 w-20">total riding</th>
                             <th className="border p-2 w-20">Dep. Time</th>
@@ -773,9 +807,9 @@ const DynamicHorseRallyAllStages = () => {
                               </td>
 
                               <td className="border p-2">{rider.duration}</td>
-                              <td className="border p-2">
+                              {/* <td className="border p-2">
                                 {rider.timeInMinutes}
-                              </td>
+                              </td> */}
                               <td
                                 className={`w-28 p-1 border rounded text-center ${
                                   rider?.speed == 0 && rider?.timeInMinutes == 0
@@ -814,29 +848,6 @@ const DynamicHorseRallyAllStages = () => {
                                 />
                               </td>
                               <td className="border p-2">{rider.recovery}</td>
-
-                              <td className="border p-2 bg-green-50">
-                                <input
-                                  type="text"
-                                  value={rider.qualified}
-                                  onChange={(e) =>
-                                    handleChange(
-                                      rider.id,
-                                      stageIndex,
-                                      e.target.value,
-                                      "qualified"
-                                    )
-                                  }
-                                  className={`w-full p-1 border rounded text-center ${
-                                    rider.qualified == "Q"
-                                      ? "bg-gray-50" //"bg-green-500"
-                                      : rider.qualified == "E"
-                                      ? "bg-red-500"
-                                      : "bg-gray-50"
-                                  }`}
-                                />
-                              </td>
-
                               <td
                                 className={`w-full p-1 border rounded text-center `}>
                                 <input
@@ -863,6 +874,28 @@ const DynamicHorseRallyAllStages = () => {
                                   }`}
                                 />
                               </td>
+                              <td className="border p-2 bg-green-50">
+                                <input
+                                  type="text"
+                                  value={rider.qualified}
+                                  onChange={(e) =>
+                                    handleChange(
+                                      rider.id,
+                                      stageIndex,
+                                      e.target.value,
+                                      "qualified"
+                                    )
+                                  }
+                                  className={`w-full p-1 border rounded text-center ${
+                                    rider.qualified == "Q"
+                                      ? "bg-gray-50" //"bg-green-500"
+                                      : rider.qualified == "E"
+                                      ? "bg-red-500"
+                                      : "bg-gray-50"
+                                  }`}
+                                />
+                              </td>
+
                               {/* <td className="border p-2">{rider.restTime}</td> */}
                               <td className="border p-2 ">
                                 {rider.totalRiding}
@@ -874,6 +907,11 @@ const DynamicHorseRallyAllStages = () => {
                       </tbody>
                       <tfoot dir="ltr">
                         <tr>
+                          <td
+                            className="border p-2 text-md font-bold text-left"
+                            colSpan="3">
+                            (Total Riders {stage?.riders?.length})
+                          </td>
                           <td
                             className="border p-2 text-md font-bold  text-red-500 text-left"
                             colSpan="6">
@@ -902,7 +940,7 @@ const DynamicHorseRallyAllStages = () => {
                               stage?.riders?.filter((x) => x.qualified == "Q")
                                 ?.length
                             }{" "}
-                            Passes = ({" "}
+                            Qualified = ({" "}
                             {`${(
                               (Number(
                                 stage?.riders?.filter((x) => x.qualified == "Q")
@@ -912,11 +950,6 @@ const DynamicHorseRallyAllStages = () => {
                               Number(stage?.riders?.length)
                             ).toFixed(0)} %`}
                             ))
-                          </td>
-                          <td
-                            className="border p-2 text-md font-bold text-left"
-                            colSpan="3">
-                            (Total Riders {stage?.riders?.length})
                           </td>
                         </tr>
                       </tfoot>

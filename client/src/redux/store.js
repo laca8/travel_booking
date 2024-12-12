@@ -5,6 +5,7 @@ import clubSlice from "./slicers/clubSlicer";
 import horseSlice from "./slicers/horseSlicer";
 import raceSlice from "./slicers/raceSlicer";
 import trainSlice from "./slicers/trainSlicer";
+import noteSlice from "./slicers/noteSlicer";
 const store = configureStore({
   reducer: {
     userSlice: userSlice,
@@ -13,6 +14,7 @@ const store = configureStore({
     horseSlice: horseSlice,
     raceSlice: raceSlice,
     trainSlice: trainSlice,
+    noteSlice: noteSlice,
   },
 });
 export default store;

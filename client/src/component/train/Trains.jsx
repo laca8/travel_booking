@@ -26,6 +26,7 @@ const Trains = () => {
     setNotify(toast.error(error));
   }, [error]);
 
+  const trainsTypes = ["الجري", "الهرولة", "الكنتر", "الهرولة"];
   return (
     <div className="">
       <div className="bg-[var(--dark-color)]">
@@ -54,11 +55,9 @@ const Trains = () => {
             <option selected disabled value={""}>
               اختر
             </option>
-            {trains?.data
-              ?.filter((x, i, r) => i === r.findIndex((y) => y.type == x.type))
-              ?.map((x, i) => (
-                <option key={i}>{x.type}</option>
-              ))}
+            {trainsTypes?.map((x, i) => (
+              <option key={i}>{x}</option>
+            ))}
           </select>
         </div>
         <div className=" w-full bg-gradient-to-b from-white to-gray-50 rounded-xl shadow-xl p-8">
