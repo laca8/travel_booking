@@ -6,7 +6,7 @@ const HorseRallyTable = () => {
       id: i + 1,
       horseName: "",
       riderName: "",
-      startTime: "",
+      startTime: "00:00",
       endTime: "",
       duration: "",
       timeInMinutes: 0,

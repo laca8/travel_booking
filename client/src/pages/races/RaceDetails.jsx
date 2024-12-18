@@ -65,13 +65,13 @@ const Race = () => {
   const knightSlice = useSelector((state) => state.knightSlice);
   const { knights } = knightSlice;
   const handleRace = () => {
-    const arr = Array.from({ length: race?.data?.num_rounds }, (_, i) => ({
-      id: i,
+    const arr = Array.from({ length: race?.data?.num_rounds }, (_, j) => ({
+      id: j,
       distance: race?.data?.rounds?.map((x, index) => {
-        if (index === i) {
+        if (index === j) {
           return x.distance;
         }
-      })[i],
+      })[j],
       riders: Array.from({ length: race?.data?.players?.length }, (_, i) => ({
         id:
           race?.data?.players?.length != 0
@@ -101,7 +101,7 @@ const Race = () => {
               })[i]
             : "",
 
-        startTime: "",
+        startTime: j === 0 ? "00:00" : "",
         endTime: "",
         duration: "",
         timeInMinutes: 0,
@@ -128,7 +128,9 @@ const Race = () => {
     if (race?.data?.entries.length == 0) {
       dispatch(editStageRace(row));
     }
-    navigator(`/race/start/${id}`);
+    if (success) {
+      navigator(`/race/start/${id}`);
+    }
   };
   return (
     <div className="">

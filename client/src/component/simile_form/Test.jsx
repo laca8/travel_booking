@@ -11,8 +11,10 @@ import { editStageRace, fetchRace } from "../../redux/slicers/raceSlicer";
 import vision from "../../assets/img/vision.jpg";
 import equ from "../../assets/img/equ.jpg";
 import icon from "../../assets/img/icon.jpg";
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+import { getDatabase, ref, push, onValue, set } from "firebase/database";
 const DynamicHorseRallyAllStages = () => {
-  const tableRef = useRef(null);
   const dispatch = useDispatch();
   const { id } = useParams();
 
@@ -22,7 +24,7 @@ const DynamicHorseRallyAllStages = () => {
   const raceSlice = useSelector((state) => state.raceSlice);
   const { race, loading, error, success } = raceSlice;
   const [stageCount, setStageCount] = useState(race?.data?.num_rounds);
-
+  const [arr, setArr] = useState([]);
   const [notify, setNotify] = useState("");
   const [timeStart, setTimeStart] = useState("");
 
@@ -33,64 +35,9 @@ const DynamicHorseRallyAllStages = () => {
   useEffect(() => {
     localStorage.setItem(`raceStages-${id}`, JSON.stringify(entries));
   }, [entries]);
-  // useEffect(() => {
-  //   localStorage.setItem("raceStages", JSON.stringify(entries));
-  // }, [entries]);
-
-  // useEffect(() => {
-  //   const initialEntries = Array.from(
-  //     { length: race?.data?.players?.length },
-  //     (_, i) => ({
-  //       id:
-  //         race?.data?.players?.length != 0
-  //           ? race?.data?.players?.map((x, index) => {
-  //               if (index === i) {
-  //                 return x.num;
-  //               }
-  //             })[i]
-  //           : "",
-  //       horseName:
-  //         race?.data?.players?.length != 0
-  //           ? race?.data?.players?.map((x, index) => {
-  //               if (index === i) {
-  //                 const res = x.horse;
-  //                 console.log(x.horse);
-  //                 return res;
-  //               }
-  //             })[i]
-  //           : "",
-
-  //       riderName:
-  //         race?.data?.players?.length != 0
-  //           ? race?.data?.players?.map((x, index) => {
-  //               if (index === i) {
-  //                 return x.knight;
-  //               }
-  //             })[i]
-  //           : "",
-  //       stages: Array.from({ length: stageCount }, (_, j) => ({
-  //         startTime: j == 0 ? timeStart : "",
-  //         endTime: "",
-  //         duration: "",
-  //         timeInMinutes: 0,
-  //         speed: 0,
-  //         vetTime: race?.data != null ? race?.data?.vite_time : "",
-  //         lastVetTime: "",
-  //         passVetTime: "",
-  //         recovery: "",
-  //         qualified: "",
-  //         pulse: "",
-  //         restTime: race?.data != null ? race?.data?.rest_time : "",
-  //         totalRiding: "",
-  //         finishTime: "",
-  //       })),
-  //     })
-  //   );
-  //   setEntries(initialEntries);
-  // }, [stageCount, id, timeStart]);
 
   const calculateDuration = (start, end) => {
-    console.log(start, end);
+    // console.log(start, end);
 
     if (!end) return "";
     const startDate = new Date(`1970/01/01 ${start}`);
@@ -153,7 +100,7 @@ const DynamicHorseRallyAllStages = () => {
 
   const calculateTimeInMinutes = (duration) => {
     if (!duration) return 0;
-    console.log(duration);
+    // console.log(duration);
     const [hours, minutes] = duration.split(":").map(Number);
     // console.log(hours, minutes);
     return hours * 60 + minutes;
@@ -166,18 +113,18 @@ const DynamicHorseRallyAllStages = () => {
       race?.data != null &&
       race?.data?.rounds.map((x, i) => {
         if (index === i) {
-          console.log(Number(x.distance)[i]);
+          // console.log(Number(x.distance)[i]);
           return Number(x?.distance);
         }
       });
-    console.log(distance[index], timeInMinutes);
+    // console.log(distance[index], timeInMinutes);
 
     const speed = distance[index] / (timeInMinutes / 60);
     return speed.toFixed(2);
   };
 
   const lastVetTimeHandle = (arrive, vetTime) => {
-    console.log(arrive, vetTime);
+    // console.log(arrive, vetTime);
 
     if (arrive === "") return "";
     const [hours, mins] = arrive.split(":").map(Number);
@@ -356,10 +303,10 @@ const DynamicHorseRallyAllStages = () => {
       const newStages = [...prevStages];
       const rider = newStages[stageIndex].riders.find((r) => r.id === riderId);
       rider[field] = value;
+
       return newStages;
     });
 
-    //   entries.map((entry) =>
     //     entry.riders.map((x, i) => {
     //       if (x.id === entryId) {
     //         const updatedStages = entry.riders.map((stage, index) => {
@@ -462,7 +409,7 @@ const DynamicHorseRallyAllStages = () => {
     setEntries((prevStages) => {
       const newStages = [...prevStages];
       const rider = newStages[0].riders.map((x) => {
-        if (x.startTime == "") {
+        if (x.startTime) {
           x["startTime"] = value;
         }
       });
@@ -751,205 +698,437 @@ const DynamicHorseRallyAllStages = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {stage?.riders?.map((rider, index) => (
-                          <tr key={index}>
-                            <React.Fragment key={stageIndex}>
-                              <td className="border p-2 text-center font-medium">
-                                {rider.id}
-                              </td>
-                              <td className="border p-2">
-                                <input
-                                  type="text"
-                                  disabled
-                                  value={rider.riderName}
-                                  className="w-28 p-1 border rounded"
-                                  placeholder="اسم الفارس"
-                                />
-                              </td>
-                              <td className="border  p-2">
-                                <input
-                                  type="text"
-                                  value={rider.horseName}
-                                  disabled
-                                  className="w-28 p-1 border rounded"
-                                  placeholder="اسم الحصان"
-                                />
-                              </td>
-                              <td className="border p-2 bg-green-50">
-                                <input
-                                  type="time"
-                                  value={rider.startTime}
-                                  onChange={(e) =>
-                                    handleChange(
-                                      rider.id,
-                                      stageIndex,
-                                      e.target.value,
-                                      "startTime"
-                                    )
-                                  }
-                                  className="w-full p-1 border rounded"
-                                />
-                              </td>
-                              <td className="border p-2 bg-green-50">
-                                <input
-                                  type="time"
-                                  value={rider.endTime}
-                                  disabled={!rider.startTime}
-                                  onChange={(e) =>
-                                    handleEndTimeChange(
-                                      rider.id,
-                                      stageIndex,
-                                      e.target.value
-                                    )
-                                  }
-                                  className="w-full p-1 border rounded"
-                                />
-                              </td>
+                        {stage?.riders?.map((rider, index) => {
+                          if (stageIndex == 0) {
+                            return (
+                              <tr key={index}>
+                                <React.Fragment key={stageIndex}>
+                                  <td className="border p-2 text-center font-medium">
+                                    {rider.id}
+                                  </td>
+                                  <td className="border p-2">
+                                    <input
+                                      type="text"
+                                      disabled
+                                      value={rider.riderName}
+                                      className="w-28 p-1 border rounded"
+                                      placeholder="اسم الفارس"
+                                    />
+                                  </td>
+                                  <td className="border  p-2">
+                                    <input
+                                      type="text"
+                                      value={rider.horseName}
+                                      disabled
+                                      className="w-28 p-1 border rounded"
+                                      placeholder="اسم الحصان"
+                                    />
+                                  </td>
+                                  <td className="border p-2 bg-green-50">
+                                    <input
+                                      type="time"
+                                      // defaultValue="00:00"
+                                      value={rider.startTime}
+                                      onChange={(e) =>
+                                        handleChange(
+                                          rider.id,
+                                          stageIndex,
+                                          e.target.value,
+                                          "startTime"
+                                        )
+                                      }
+                                      className="w-full p-1 border rounded"
+                                    />
+                                  </td>
+                                  <td className="border p-2 bg-green-50">
+                                    <input
+                                      type="time"
+                                      value={rider.endTime}
+                                      disabled={!rider.startTime}
+                                      onChange={(e) =>
+                                        handleEndTimeChange(
+                                          rider.id,
+                                          stageIndex,
+                                          e.target.value
+                                        )
+                                      }
+                                      className="w-full p-1 border rounded"
+                                    />
+                                  </td>
 
-                              <td className="border p-2">{rider.duration}</td>
-                              {/* <td className="border p-2">
+                                  <td className="border p-2">
+                                    {rider.duration}
+                                  </td>
+                                  {/* <td className="border p-2">
                                 {rider.timeInMinutes}
                               </td> */}
-                              <td
-                                className={`w-28 p-1 border rounded text-center ${
-                                  rider?.speed == 0 && rider?.timeInMinutes == 0
-                                    ? "bg-gray-50"
-                                    : (rider?.timeInMinutes != 0 &&
-                                        rider.speed > race?.data?.max_speed) ||
-                                      (rider?.timeInMinutes != 0 &&
-                                        rider.speed < race?.data?.min_speed)
-                                    ? "bg-red-500"
-                                    : (rider?.timeInMinutes != 0 &&
-                                        rider.speed >= race?.data?.min_speed) ||
-                                      (rider?.timeInMinutes != 0 &&
-                                        rider.speed <= race?.data?.max_speed)
-                                    ? "bg-gray-50" //"bg-green-500"
-                                    : "bg-gray-50"
-                                }`}>
-                                {rider.speed}
-                              </td>
-                              {/* <td className="border p-2">{rider.vetTime}</td> */}
-                              <td className="border p-2">
-                                {rider.lastVetTime}
-                              </td>
-                              <td className="border p-2">
-                                <input
-                                  type="time"
-                                  disabled={!rider.endTime}
-                                  value={rider.passVetTime}
-                                  onChange={(e) =>
-                                    recoveryHandle(
-                                      rider.id,
-                                      stageIndex,
-                                      e.target.value
-                                    )
-                                  }
-                                  className="w-full p-1 border rounded"
-                                />
-                              </td>
-                              <td className="border p-2">{rider.recovery}</td>
-                              <td
-                                className={`w-full p-1 border rounded text-center `}>
-                                <input
-                                  type="number"
-                                  value={rider.pulse}
-                                  onChange={(e) =>
-                                    handleChange(
-                                      rider.id,
-                                      stageIndex,
-                                      e.target.value,
-                                      "pulse"
-                                    )
-                                  }
-                                  className={`w-28 p-1 border rounded text-center ${
-                                    rider.pulse == ""
-                                      ? "bg-gray-50"
-                                      : Number(rider.pulse) <=
-                                        Number(race?.data?.pulse)
-                                      ? "bg-gray-50" //"bg-green-500"
-                                      : Number(rider.pulse) >
-                                        Number(race?.data?.pulse)
-                                      ? "bg-red-500"
-                                      : "bg-gray-50"
-                                  }`}
-                                />
-                              </td>
-                              <td className="border p-2 bg-green-50">
-                                <input
-                                  type="text"
-                                  value={rider.qualified}
-                                  onChange={(e) =>
-                                    handleChange(
-                                      rider.id,
-                                      stageIndex,
-                                      e.target.value,
-                                      "qualified"
-                                    )
-                                  }
-                                  className={`w-full p-1 border rounded text-center ${
-                                    rider.qualified == "Q"
-                                      ? "bg-gray-50" //"bg-green-500"
-                                      : rider.qualified == "E"
-                                      ? "bg-red-500"
-                                      : "bg-gray-50"
-                                  }`}
-                                />
-                              </td>
+                                  <td
+                                    className={`w-28 p-1 border rounded text-center ${
+                                      rider?.speed == 0 &&
+                                      rider?.timeInMinutes == 0
+                                        ? "bg-gray-50"
+                                        : (rider?.timeInMinutes != 0 &&
+                                            rider.speed >
+                                              race?.data?.max_speed) ||
+                                          (rider?.timeInMinutes != 0 &&
+                                            rider.speed < race?.data?.min_speed)
+                                        ? "bg-red-500"
+                                        : (rider?.timeInMinutes != 0 &&
+                                            rider.speed >=
+                                              race?.data?.min_speed) ||
+                                          (rider?.timeInMinutes != 0 &&
+                                            rider.speed <=
+                                              race?.data?.max_speed)
+                                        ? "bg-gray-50" //"bg-green-500"
+                                        : "bg-gray-50"
+                                    }`}>
+                                    {rider.speed}
+                                  </td>
+                                  {/* <td className="border p-2">{rider.vetTime}</td> */}
+                                  <td className="border p-2">
+                                    {rider.lastVetTime}
+                                  </td>
+                                  <td className="border p-2">
+                                    <input
+                                      type="time"
+                                      disabled={!rider.endTime}
+                                      value={rider.passVetTime}
+                                      onChange={(e) =>
+                                        recoveryHandle(
+                                          rider.id,
+                                          stageIndex,
+                                          e.target.value
+                                        )
+                                      }
+                                      className="w-full p-1 border rounded"
+                                    />
+                                  </td>
+                                  <td className="border p-2">
+                                    {rider.recovery}
+                                  </td>
+                                  <td
+                                    className={`w-full p-1 border rounded text-center `}>
+                                    <input
+                                      type="number"
+                                      value={rider.pulse}
+                                      onChange={(e) =>
+                                        handleChange(
+                                          rider.id,
+                                          stageIndex,
+                                          e.target.value,
+                                          "pulse"
+                                        )
+                                      }
+                                      className={`w-28 p-1 border rounded text-center ${
+                                        rider.pulse == ""
+                                          ? "bg-gray-50"
+                                          : Number(rider.pulse) <=
+                                            Number(race?.data?.pulse)
+                                          ? "bg-gray-50" //"bg-green-500"
+                                          : Number(rider.pulse) >
+                                            Number(race?.data?.pulse)
+                                          ? "bg-red-500"
+                                          : "bg-gray-50"
+                                      }`}
+                                    />
+                                  </td>
+                                  <td className="border p-2 bg-green-50">
+                                    <input
+                                      type="text"
+                                      value={rider.qualified}
+                                      onChange={(e) =>
+                                        handleChange(
+                                          rider.id,
+                                          stageIndex,
+                                          e.target.value,
+                                          "qualified"
+                                        )
+                                      }
+                                      className={`w-full p-1 border rounded text-center ${
+                                        rider.qualified == "Q"
+                                          ? "bg-gray-50" //"bg-green-500"
+                                          : rider.qualified == "E"
+                                          ? "bg-red-500"
+                                          : "bg-gray-50"
+                                      }`}
+                                    />
+                                  </td>
 
-                              {/* <td className="border p-2">{rider.restTime}</td> */}
-                              <td className="border p-2 ">
-                                {rider.totalRiding}
-                              </td>
-                              <td className="border p-2">{rider.finishTime}</td>
-                            </React.Fragment>
-                          </tr>
-                        ))}
+                                  {/* <td className="border p-2">{rider.restTime}</td> */}
+                                  <td className="border p-2 ">
+                                    {rider.totalRiding}
+                                  </td>
+                                  <td className="border p-2">
+                                    {rider.finishTime}
+                                  </td>
+                                </React.Fragment>
+                              </tr>
+                            );
+                          } else if (
+                            stage.id > 0 &&
+                            entries[stageIndex - 1]?.riders[index]
+                              ?.qualified === "Q"
+                          ) {
+                            console.log(stage[0]);
+
+                            return (
+                              <tr key={index}>
+                                <React.Fragment key={stageIndex}>
+                                  <td className="border p-2 text-center font-medium">
+                                    {rider.id}
+                                  </td>
+                                  <td className="border p-2">
+                                    <input
+                                      type="text"
+                                      disabled
+                                      value={rider.riderName}
+                                      className="w-28 p-1 border rounded"
+                                      placeholder="اسم الفارس"
+                                    />
+                                  </td>
+                                  <td className="border  p-2">
+                                    <input
+                                      type="text"
+                                      value={rider.horseName}
+                                      disabled
+                                      className="w-28 p-1 border rounded"
+                                      placeholder="اسم الحصان"
+                                    />
+                                  </td>
+                                  <td className="border p-2 bg-green-50">
+                                    <input
+                                      type="time"
+                                      //defaultValue="00:00"
+                                      value={rider.startTime}
+                                      onChange={(e) =>
+                                        handleChange(
+                                          rider.id,
+                                          stageIndex,
+                                          e.target.value,
+                                          "startTime"
+                                        )
+                                      }
+                                      className="w-full p-1 border rounded"
+                                    />
+                                  </td>
+                                  <td className="border p-2 bg-green-50">
+                                    <input
+                                      type="time"
+                                      value={rider.endTime}
+                                      disabled={!rider.startTime}
+                                      onChange={(e) =>
+                                        handleEndTimeChange(
+                                          rider.id,
+                                          stageIndex,
+                                          e.target.value
+                                        )
+                                      }
+                                      className="w-full p-1 border rounded"
+                                    />
+                                  </td>
+
+                                  <td className="border p-2">
+                                    {rider.duration}
+                                  </td>
+                                  {/* <td className="border p-2">
+                                {rider.timeInMinutes}
+                              </td> */}
+                                  <td
+                                    className={`w-28 p-1 border rounded text-center ${
+                                      rider?.speed == 0 &&
+                                      rider?.timeInMinutes == 0
+                                        ? "bg-gray-50"
+                                        : (rider?.timeInMinutes != 0 &&
+                                            rider.speed >
+                                              race?.data?.max_speed) ||
+                                          (rider?.timeInMinutes != 0 &&
+                                            rider.speed < race?.data?.min_speed)
+                                        ? "bg-red-500"
+                                        : (rider?.timeInMinutes != 0 &&
+                                            rider.speed >=
+                                              race?.data?.min_speed) ||
+                                          (rider?.timeInMinutes != 0 &&
+                                            rider.speed <=
+                                              race?.data?.max_speed)
+                                        ? "bg-gray-50" //"bg-green-500"
+                                        : "bg-gray-50"
+                                    }`}>
+                                    {rider.speed}
+                                  </td>
+                                  {/* <td className="border p-2">{rider.vetTime}</td> */}
+                                  <td className="border p-2">
+                                    {rider.lastVetTime}
+                                  </td>
+                                  <td className="border p-2">
+                                    <input
+                                      type="time"
+                                      disabled={!rider.endTime}
+                                      value={rider.passVetTime}
+                                      onChange={(e) =>
+                                        recoveryHandle(
+                                          rider.id,
+                                          stageIndex,
+                                          e.target.value
+                                        )
+                                      }
+                                      className="w-full p-1 border rounded"
+                                    />
+                                  </td>
+                                  <td className="border p-2">
+                                    {rider.recovery}
+                                  </td>
+                                  <td
+                                    className={`w-full p-1 border rounded text-center `}>
+                                    <input
+                                      type="number"
+                                      value={rider.pulse}
+                                      onChange={(e) =>
+                                        handleChange(
+                                          rider.id,
+                                          stageIndex,
+                                          e.target.value,
+                                          "pulse"
+                                        )
+                                      }
+                                      className={`w-28 p-1 border rounded text-center ${
+                                        rider.pulse == ""
+                                          ? "bg-gray-50"
+                                          : Number(rider.pulse) <=
+                                            Number(race?.data?.pulse)
+                                          ? "bg-gray-50" //"bg-green-500"
+                                          : Number(rider.pulse) >
+                                            Number(race?.data?.pulse)
+                                          ? "bg-red-500"
+                                          : "bg-gray-50"
+                                      }`}
+                                    />
+                                  </td>
+                                  <td className="border p-2 bg-green-50">
+                                    <input
+                                      type="text"
+                                      value={rider.qualified}
+                                      onChange={(e) =>
+                                        handleChange(
+                                          rider.id,
+                                          stageIndex,
+                                          e.target.value,
+                                          "qualified"
+                                        )
+                                      }
+                                      className={`w-full p-1 border rounded text-center ${
+                                        rider.qualified == "Q"
+                                          ? "bg-gray-50" //"bg-green-500"
+                                          : rider.qualified == "E"
+                                          ? "bg-red-500"
+                                          : "bg-gray-50"
+                                      }`}
+                                    />
+                                  </td>
+
+                                  {/* <td className="border p-2">{rider.restTime}</td> */}
+                                  <td className="border p-2 ">
+                                    {rider.totalRiding}
+                                  </td>
+                                  <td className="border p-2">
+                                    {rider.finishTime}
+                                  </td>
+                                </React.Fragment>
+                              </tr>
+                            );
+                          }
+                        })}
                       </tbody>
                       <tfoot dir="ltr">
                         <tr>
                           <td
                             className="border p-2 text-md font-bold text-left"
                             colSpan="3">
-                            (Total Riders {stage?.riders?.length})
+                            Total Riders{" "}
+                            {stageIndex != 0
+                              ? stage?.riders?.filter(
+                                  (x, index) =>
+                                    index != 0 &&
+                                    entries[stageIndex - 1]?.riders[index]
+                                      ?.qualified === "Q"
+                                )?.length + 1
+                              : stage?.riders?.length}
                           </td>
                           <td
                             className="border p-2 text-md font-bold  text-red-500 text-left"
                             colSpan="6">
-                            (
-                            {
-                              stage?.riders?.filter((x) => x.qualified == "E")
-                                ?.length
-                            }{" "}
-                            Disqualified) ={" "}
-                            {`${(
-                              (Number(
-                                stage?.riders?.filter((x) => x.qualified == "E")
-                                  ?.length
-                              ) *
-                                100) /
-                              Number(stage?.riders?.length)
-                            ).toFixed(0)} %`}
-                            ))
+                            {stageIndex != 0
+                              ? `${
+                                  entries[stageIndex]?.riders?.filter(
+                                    (x, index) =>
+                                      entries[stageIndex]?.riders[index]
+                                        ?.qualified === "E"
+                                  )?.length
+                                }
+                                Disqualified  ${(
+                                  (Number(
+                                    entries[stageIndex]?.riders?.filter(
+                                      (x) => x.qualified == "E"
+                                    )?.length
+                                  ) *
+                                    100) /
+                                  Number(
+                                    entries[stageIndex - 1]?.riders?.filter(
+                                      (x) => x.qualified == "Q"
+                                    )?.length
+                                  )
+                                ).toFixed(0)} %`
+                              : `${
+                                  stage?.riders?.filter(
+                                    (x) => x.qualified == "E"
+                                  )?.length
+                                } Disqualified  ${(
+                                  (Number(
+                                    stage?.riders?.filter(
+                                      (x) => x.qualified == "E"
+                                    )?.length
+                                  ) *
+                                    100) /
+                                  Number(stage?.riders?.length)
+                                ).toFixed(0)} %`}
                           </td>
 
                           <td
                             className="border p-2 text-md font-bold  text-green-500 text-left"
                             colSpan="6">
-                            (
-                            {
-                              stage?.riders?.filter((x) => x.qualified == "Q")
-                                ?.length
-                            }{" "}
-                            Qualified = ({" "}
-                            {`${(
-                              (Number(
-                                stage?.riders?.filter((x) => x.qualified == "Q")
-                                  ?.length
-                              ) *
-                                100) /
-                              Number(stage?.riders?.length)
-                            ).toFixed(0)} %`}
-                            ))
+                            {stageIndex != 0
+                              ? `${
+                                  entries[stageIndex]?.riders?.filter(
+                                    (x, index) =>
+                                      entries[stageIndex]?.riders[index]
+                                        ?.qualified === "Q"
+                                  )?.length
+                                }
+                                Qualified  ${(
+                                  (Number(
+                                    entries[stageIndex]?.riders?.filter(
+                                      (x) => x.qualified == "Q"
+                                    )?.length
+                                  ) *
+                                    100) /
+                                  Number(
+                                    entries[stageIndex - 1]?.riders?.filter(
+                                      (x) => x.qualified == "Q"
+                                    )?.length
+                                  )
+                                ).toFixed(0)} %`
+                              : `${
+                                  stage?.riders?.filter(
+                                    (x) => x.qualified == "Q"
+                                  )?.length
+                                } Disqualified  ${(
+                                  (Number(
+                                    stage?.riders?.filter(
+                                      (x) => x.qualified == "Q"
+                                    )?.length
+                                  ) *
+                                    100) /
+                                  Number(stage?.riders?.length)
+                                ).toFixed(0)} %`}
                           </td>
                         </tr>
                       </tfoot>
