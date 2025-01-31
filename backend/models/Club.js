@@ -12,19 +12,15 @@ const clubSchema = new mongoose.Schema(
     },
     club_owner: {
       type: String,
-      required: [true, "من فضلك ادخل اسم مالك النادي"],
     },
     phone: {
       type: String,
-      required: [true, "من فضلك ادخل رقم التليفون"],
     },
     manager: {
       type: String,
-      required: [true, "من فضلك ادخل اسم المدير"],
     },
     address: {
       type: String,
-      required: [true, " من فضلك ادخل عنوان النادي "],
     },
     website: {
       type: String,

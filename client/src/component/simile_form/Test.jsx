@@ -865,12 +865,11 @@ const DynamicHorseRallyAllStages = () => {
                               </tr>
                             );
                           } else if (
-                            stage.id > 0 &&
-                            entries[stageIndex - 1]?.riders[index]
-                              ?.qualified === "Q"
+                            stageIndex != 0 &&
+                            entries[stageIndex - 1]?.riders?.filter(
+                              (x) => x?.qualified == "Q"
+                            )
                           ) {
-                            console.log(stage[0]);
-
                             return (
                               <tr key={index}>
                                 <React.Fragment key={stageIndex}>

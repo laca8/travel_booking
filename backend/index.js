@@ -10,6 +10,7 @@ const horseRoute = require("./routes/horse");
 const raceRoute = require("./routes/race");
 const trainRoute = require("./routes/train");
 const noteRoute = require("./routes/notes");
+const playerRoute = require("./routes/player");
 const app = express();
 db();
 dotenv.config();
@@ -25,6 +26,7 @@ app.use("/api/horse", horseRoute);
 app.use("/api/train", trainRoute);
 app.use("/api/race", raceRoute);
 app.use("/api/note", noteRoute);
+app.use("/api/player", playerRoute);
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../client/dist")));
   app.get("*", (req, res) => {

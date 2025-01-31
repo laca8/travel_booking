@@ -12,6 +12,7 @@ import { toast } from "react-toastify";
 import { useParams } from "react-router-dom";
 import { fetchHorse, fetchHorses } from "../../redux/slicers/horseSlicer";
 import { fetchKnight, fetchKnights } from "../../redux/slicers/knightSlicer";
+import axios from "axios";
 function InfoItem({ label, value }) {
   return (
     <div className="bg-gray-50 p-2 rounded ">
@@ -25,6 +26,7 @@ function InfoItem({ label, value }) {
 const Race = () => {
   const { id } = useParams();
   const [notify, setNotify] = useState("");
+  const [players, setPlayers] = useState([]);
   const dispatch = useDispatch();
   const raceSlice = useSelector((state) => state.raceSlice);
   const { race, loading, error, success } = raceSlice;
@@ -54,16 +56,7 @@ const Race = () => {
     }
     // إعادة تعيين الحقول بعد التسجيل
   };
-  useEffect(() => {
-    dispatch(fetchHorses());
-  }, []);
-  const horseSlice = useSelector((state) => state.horseSlice);
-  const { horses } = horseSlice;
-  useEffect(() => {
-    dispatch(fetchKnights());
-  }, []);
-  const knightSlice = useSelector((state) => state.knightSlice);
-  const { knights } = knightSlice;
+
   const handleRace = () => {
     const arr = Array.from({ length: race?.data?.num_rounds }, (_, j) => ({
       id: j,
@@ -132,6 +125,17 @@ const Race = () => {
       navigator(`/race/start/${id}`);
     }
   };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axios.get("/api/player");
+        setPlayers(res.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, []);
   return (
     <div className="">
       <div className="bg-[var(--dark-color)]">
@@ -221,7 +225,7 @@ const Race = () => {
             </div>
 
             <div className="mb-2">
-              {/* <label className="block mb-1 font-bold">اسم الفارس:</label>
+              <label className="block mb-1 font-bold">اسم الفارس:</label>
               <select
                 className="border rounded w-full p-2"
                 required
@@ -230,14 +234,14 @@ const Race = () => {
                 <option selected disabled value={""}>
                   اختر
                 </option>
-                {knights?.data &&
-                  knights?.data?.map((x, i) => (
-                    <option value={x.name} key={i}>
-                      {x.name}
+                {players?.data &&
+                  players?.data?.map((x, i) => (
+                    <option value={x.knight} key={i}>
+                      {x.knight}
                     </option>
                   ))}
-              </select> */}
-              <label className="w-full block text-sm font-bold text-gray-700 mb-2">
+              </select>
+              {/* <label className="w-full block text-sm font-bold text-gray-700 mb-2">
                 اسم الفارس
               </label>
               <input
@@ -246,12 +250,12 @@ const Race = () => {
                 onChange={(e) => setRiderName(e.target.value)}
                 required
                 className="w-full p-2 border rounded"
-              />
+              /> */}
             </div>
             <div className="mb-2">
-              {/* <label className="block mb-1 font-bold">اسم الخيل:</label>
+              <label className="block mb-1 font-bold">اسم الخيل:</label>
               <select
-                disabled={horses?.data?.length == 0}
+                disabled={players?.data?.length == 0}
                 className="border rounded w-full p-2"
                 required
                 value={horseName}
@@ -259,14 +263,14 @@ const Race = () => {
                 <option value={""} selected disabled>
                   اختر
                 </option>
-                {horses?.data &&
-                  horses?.data?.map((x, i) => (
-                    <option value={x?.name} key={i}>
-                      {x?.name}
+                {players?.data &&
+                  players?.data?.map((x, i) => (
+                    <option value={x?.horse} key={i}>
+                      {x?.horse}
                     </option>
                   ))}
-              </select> */}
-              <label className="w-full block text-sm font-bold text-gray-700 mb-2">
+              </select>
+              {/* <label className="w-full block text-sm font-bold text-gray-700 mb-2">
                 اسم الخيل
               </label>
               <input
@@ -275,7 +279,7 @@ const Race = () => {
                 onChange={(e) => setHorseName(e.target.value)}
                 required
                 className="w-full p-2 border rounded"
-              />
+              /> */}
             </div>
             <button
               onClick={() => handleSubmit()}
@@ -284,6 +288,14 @@ const Race = () => {
               className="bg-[var(--primary-color)] text-white rounded p-2">
               سجل الآن
             </button>
+            <div className="bg-yellow-200 p-2 mt-2 rounded-md text-lg">
+              <p>ملاحظة !</p>
+              <p> 1-يجب اضافة كل اللاعبين قبل بداية السباق</p>
+              <p>
+                2- اذا تم الضغط علي زرار الي السباق وتم الدخول الي المسابقة لن
+                يتم اضافة لاعبين اخرين
+              </p>
+            </div>
           </div>
           <div className="mt-2">
             <div className="overflow-x-auto rounded-lg shadow-sm max-h-48">

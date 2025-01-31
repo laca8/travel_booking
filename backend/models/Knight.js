@@ -13,23 +13,18 @@ const knightSchema = new mongoose.Schema(
     },
     sex: {
       type: String,
-      required: [true, "من فضلك ادخل النوع"],
     },
     phone: {
       type: String,
-      required: [true, "من فضلك ادخل رقم التليفون"],
     },
     stable: {
       type: String,
-      required: [true, "من فضلك ادخل الاسطبل"],
     },
     age: {
       type: String,
-      required: [true, "من فضلك ادخل تاريخ الميلاد"],
     },
     address: {
       type: String,
-      required: [true, "من فضلك ادخل  العنوان"],
     },
     image: {
       type: String,

@@ -22,6 +22,8 @@ import Test from "./component/simile_form/Test";
 import HorseRacingTables from "./component/simile_form/HorceRacingTable";
 import Sidebar from "./component/admin/Sidebar";
 import BuyingHorses from "./component/horse/BuyingHorses";
+import Knight from "./pages/admin/Knight";
+import Report from "./pages/admin/Report";
 function App() {
   return (
     <div>
@@ -47,6 +49,8 @@ function App() {
           <Route path="/admin" element={<Sidebar />}></Route>
           <Route path="/buy-horse" element={<BuyingHorses />}></Route>
           <Route path="/race/start/:id" element={<Test />}></Route>
+          <Route path="/admin-knight" element={<Knight />}></Route>
+          <Route path="/admin-report" element={<Report />}></Route>
         </Routes>
       </BrowserRouter>
     </div>

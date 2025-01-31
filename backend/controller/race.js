@@ -143,6 +143,46 @@ const editStagesRace = async (req, res) => {
     return res.status(500).json({ message: err.message });
   }
 };
+const getReportHorse = async (req, res) => {
+  const { horse } = req.params;
+  console.log(horse);
+  try {
+    const raceExist = await Race.find({});
+    // console.log(
+    //   raceExist.map((x) =>
+    //     x.entries.map((y) => y.riders.filter((z) => z.horseName == horse))
+    //   )
+    // );
+
+    const exist = raceExist.flatMap((x) =>
+      x.entries.flatMap((y) =>
+        y.riders.flatMap((z) => {
+          if (z.horseName == horse) {
+            return {
+              date: x.date,
+              disRounds: [y.distance],
+              distance: x.distance,
+              address: x.address,
+              num_rounds: x.num_rounds,
+              qualified: y.riders
+                .filter((x) => x.horseName == horse)
+                .map((x) => x.qualified),
+              totalRiding: y.riders
+                .filter((x) => x.horseName == horse)
+                .map((x) => x.totalRiding),
+            };
+          }
+        })
+      )
+    );
+
+    // console.log(exist);
+    res.send(exist);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: err.message });
+  }
+};
 module.exports = {
   addRace,
   getRace,
@@ -150,4 +190,5 @@ module.exports = {
   deleteRace,
   getRaces,
   editStagesRace,
+  getReportHorse,
 };

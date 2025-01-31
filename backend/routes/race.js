@@ -8,4 +8,5 @@ router.get("/", protect, allowTo, raceCntrl.getRaces);
 router.put("/:id", protect, allowTo, raceCntrl.editRace);
 router.put("/:id/stages", protect, allowTo, raceCntrl.editStagesRace);
 router.delete("/:id", protect, allowTo, raceCntrl.deleteRace);
+router.get("/report/:horse", raceCntrl.getReportHorse);
 module.exports = router;

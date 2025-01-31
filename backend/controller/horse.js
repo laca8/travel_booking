@@ -48,20 +48,7 @@ const addHorse = async (req, res) => {
   } = req.body;
 
   try {
-    if (
-      !name ||
-      !sex ||
-      !color ||
-      !stable ||
-      !type ||
-      !age ||
-      !ship_num ||
-      !horse_owner ||
-      !pulse ||
-      !eye ||
-      !blood ||
-      !heat
-    ) {
+    if (!name) {
       return res.status(400).json({ message: "يجب ادخال جميع الحقول" });
     }
     const newHorse = await Horse.create({

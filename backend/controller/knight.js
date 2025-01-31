@@ -36,7 +36,7 @@ const addKnight = async (req, res) => {
   // console.log(req.user);
 
   try {
-    if (!name || !sex || !phone || !stable || !age || !address) {
+    if (!name) {
       return res.status(400).json({ message: "يجب ادخال جميع الحقول" });
     }
     if (name.length < 3) {

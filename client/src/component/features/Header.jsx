@@ -19,7 +19,7 @@ const Header = () => {
               onClick={() => navigator("/")}
               src={icon}
               alt="logo"
-              className="w-14 rounded-xl"
+              className="w-20 rounded-xl"
             />
           </a>
 
@@ -81,24 +81,45 @@ const Header = () => {
                     </li>
                   ) : null}
                   {JSON.parse(user)?.data?.isAdmin ? (
-                    <li className=" border-[var(--primary-color)]  px-3 text-white block font-semibold text-[15px]">
-                      <Dropdown
-                        label="المسابقة"
-                        dismissOnClick={false}
-                        inline
-                        className="bg-[var(--secondary-color)]">
-                        <Dropdown.Item
-                          onClick={() => navigator("/champ")}
-                          className="text-[var(--dark-color)]">
-                          اضافة مسابقة
-                        </Dropdown.Item>
-                        <Dropdown.Item
-                          onClick={() => navigator("/races-details")}
-                          className="text-[var(--dark-color)]">
-                          المسابقات
-                        </Dropdown.Item>
-                      </Dropdown>
-                    </li>
+                    <>
+                      <li className=" border-[var(--primary-color)]  px-3 text-white block font-semibold text-[15px]">
+                        <Dropdown
+                          label="المسابقة"
+                          dismissOnClick={false}
+                          inline
+                          className="bg-[var(--secondary-color)]">
+                          <Dropdown.Item
+                            onClick={() => navigator("/champ")}
+                            className="text-[var(--dark-color)]">
+                            اضافة مسابقة
+                          </Dropdown.Item>
+                          <Dropdown.Item
+                            onClick={() => navigator("/races-details")}
+                            className="text-[var(--dark-color)]">
+                            المسابقات
+                          </Dropdown.Item>
+                        </Dropdown>
+                      </li>
+                      <li className=" border-[var(--primary-color)]  px-3 text-white block font-semibold text-[15px]">
+                        <Dropdown
+                          label="الادمن"
+                          dismissOnClick={false}
+                          inline
+                          className="bg-[var(--secondary-color)]">
+                          <Dropdown.Item
+                            onClick={() => navigator("/admin-knight")}
+                            className="text-[var(--dark-color)]">
+                            اضافة متسابق
+                          </Dropdown.Item>
+
+                          <Dropdown.Item
+                            onClick={() => navigator("/admin-report")}
+                            className="text-[var(--dark-color)]">
+                            تقارير
+                          </Dropdown.Item>
+                        </Dropdown>
+                      </li>
+                    </>
                   ) : null}
 
                   <li className=" border-gray-300  px-3">
