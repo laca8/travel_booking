@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "npm i && cd backend && npm install && cd client && npm install ",
+    "build": "npm i && cd backend && npm install",
     "server": "cd backend && node index.js",
     "client": "npm run dev --prefix  client",
     "dev": "concurrently \"npm run server \" \"npm run client\"",
